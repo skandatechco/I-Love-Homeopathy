@@ -1,0 +1,74 @@
+ilh-site/
+├─ app/
+│  ├─ layout.tsx
+│  ├─ page.tsx
+│  ├─ [lang]/
+│  │  ├─ layout.tsx
+│  │  ├─ page.tsx
+│  │  ├─ remedies/
+│  │  │  └─ [slug]/
+│  │  │     └─ page.tsx
+│  │  ├─ guides/
+│  │  │  └─ [slug]/
+│  │  │     └─ page.tsx
+│  │  └─ api/
+│  │     └─ health/route.ts
+├─ components/
+│  ├─ compliance/
+│  │  ├─ MedicalDisclaimer.tsx
+│  │  ├─ UrgentCareWarning.tsx
+│  │  ├─ SupportiveCareNote.tsx
+│  │  ├─ ReviewerAttribution.tsx
+│  ├─ marketing/
+│  │  ├─ BuyFromBaholaButton.tsx
+│  │  ├─ ConsultBaholaCTA.tsx
+│  │  ├─ CoursePromo.tsx
+│  │  ├─ RemedyForCTA.tsx
+│  │  ├─ ResearchCTA.tsx
+│  │  ├─ EmailSignup.tsx
+│  ├─ interactive/
+│  │  └─ Quiz.tsx
+│  ├─ ui/
+│  │  ├─ Container.tsx
+│  │  ├─ Card.tsx
+│  │  └─ LangSwitcher.tsx
+├─ content/
+│  ├─ en/
+│  │  ├─ remedies/
+│  │  │  ├─ arsenicum-album.mdx
+│  │  │  └─ belladonna.mdx
+│  │  ├─ guides/
+│  │  │  └─ headache.mdx
+│  │  └─ site-copy/
+│  │     ├─ about.mdx
+│  │     └─ contact.mdx
+│  ├─ hi/
+│  │  └─ guides/
+│  │     └─ headache.mdx
+│  └─ ta/
+│     └─ guides/
+│        └─ headache.mdx
+├─ lib/
+│  ├─ mdx.ts
+│  ├─ content.ts
+│  ├─ tracking.ts
+│  ├─ i18n.ts
+│  └─ types.ts
+├─ locales/
+│  ├─ en/common.json
+│  ├─ hi/common.json
+│  └─ ta/common.json
+├─ public/
+│  └─ favicon.ico
+├─ styles/
+│  ├─ globals.css
+│  └─ prose.css
+├─ docs/
+│  └─ PRD.md
+├─ README-FUSION.md
+├─ next.config.js
+├─ middleware.ts
+├─ package.json
+├─ postcss.config.js
+├─ tailwind.config.js
+├─ tsconfig.json
