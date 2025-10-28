@@ -2,7 +2,7 @@
 Project: I ❤️ Homeopathy (ILH) Website  
 Version: 1.1  
 Prepared for: Bahola Labs / ILH Team  
-Prepared by: ChatGPT (GPT-5 Thinking)  
+Prepared by: S Kartik Raghava Murty  
 Date: October 2025
 
 ## 1. Vision
