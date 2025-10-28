@@ -1,4 +1,4 @@
-import "./../styles/globals.css";
+import "@/styles/globals.css";
 import Container from "@/components/ui/Container";
 import LangSwitcher from "@/components/ui/LangSwitcher";
 
@@ -16,7 +16,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-white text-[#1a1a1a]">
       <body className="min-h-screen flex flex-col">
-        <header className="border-b border-gray-200">
+        {/* Global Header */}
+        <header className="border-b border-gray-200 bg-white/80 backdrop-blur">
           <Container>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -24,13 +25,15 @@ export default function RootLayout({
                   I ❤️ HOMEOPATHY
                 </div>
                 <div className="text-[11px] text-gray-600">
-                  Learn Responsibly. Consult Confidently. Contribute to
-                  Research.
+                  Learn Responsibly. Consult Confidently. Contribute to Research.
                 </div>
               </div>
 
               <nav className="flex flex-wrap items-center gap-4 text-xs text-gray-700">
-                <a href="/en/guides/headache" className="hover:text-baholaNavy">
+                <a
+                  href="/en/guides/headache"
+                  className="hover:text-baholaNavy"
+                >
                   Guides
                 </a>
                 <a
@@ -39,20 +42,26 @@ export default function RootLayout({
                 >
                   Remedies
                 </a>
-                <a href="/en/about" className="hover:text-baholaNavy">
+                <a
+                  href="/en/about"
+                  className="hover:text-baholaNavy"
+                >
                   About
                 </a>
+
                 <LangSwitcher />
               </nav>
             </div>
           </Container>
         </header>
 
-        <main className="flex-1">
+        {/* Main content */}
+        <main className="flex-1 bg-white text-[#1a1a1a]">
           <Container>{children}</Container>
         </main>
 
-        <footer className="border-t border-gray-200 text-xs text-gray-500 leading-relaxed">
+        {/* Global Footer */}
+        <footer className="border-t border-gray-200 bg-white text-xs text-gray-500 leading-relaxed">
           <Container>
             <div>
               I ❤️ HOMEOPATHY · Educational use only · Not a substitute for
