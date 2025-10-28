@@ -7,9 +7,11 @@ export default function LangLayout({
   children: React.ReactNode;
   params: { lang: string };
 }) {
-  // we could add localized <html lang={...}/> later if we split layouts
+  // We just validate the lang here. Later we can redirect or fallback.
   if (!isSupportedLang(params.lang)) {
-    // in future: redirect to defaultLang
+    // In future we might redirect to default language.
+    // For now we just render anyway.
   }
+
   return <>{children}</>;
 }
