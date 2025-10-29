@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import cn from "classnames";
 
-export function Card({
+export default function Card({
   children,
   className
 }: {
@@ -19,3 +19,6 @@ export function Card({
     </div>
   );
 }
+
+// Named export for consistency
+export { Card };

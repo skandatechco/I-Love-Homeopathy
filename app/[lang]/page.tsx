@@ -7,8 +7,9 @@ import CoursePromo from "@/components/marketing/CoursePromo";
 import RemedyForCTA from "@/components/marketing/RemedyForCTA";
 import EmailSignup from "@/components/marketing/EmailSignup";
 
-export default function HomePage({ params }: { params: { lang: string } }) {
-  const lang = isSupportedLang(params.lang) ? params.lang : "en";
+export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang: langParam } = await params;
+  const lang = isSupportedLang(langParam) ? langParam : "en";
   const remedies = listDocs(lang, "remedies").slice(0, 3);
   const guides = listDocs(lang, "guides").slice(0, 3);
 

@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Host
+Host: https://i-love-homeopathy.com
+
+# Sitemaps
+Sitemap: https://i-love-homeopathy.com/sitemap.xml

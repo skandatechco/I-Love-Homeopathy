@@ -10,12 +10,13 @@ import BuyFromBaholaButton from "@/components/marketing/BuyFromBaholaButton";
 import ResearchCTA from "@/components/marketing/ResearchCTA";
 import Quiz from "@/components/interactive/Quiz";
 
-export default function RemedyPage({
+export default async function RemedyPage({
   params
 }: {
-  params: { lang: string; slug: string };
+  params: Promise<{ lang: string; slug: string }>;
 }) {
-  const { meta, content } = getDocBySlug(params.lang, "remedies", params.slug);
+  const { lang, slug } = await params;
+  const { meta, content } = getDocBySlug(lang, "remedies", slug);
 
   return (
     <article className="prose max-w-none">
@@ -71,3 +72,4 @@ export default function RemedyPage({
     </article>
   );
 }
+

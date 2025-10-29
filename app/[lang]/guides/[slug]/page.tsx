@@ -7,12 +7,13 @@ import RemedyForCTA from "@/components/marketing/RemedyForCTA";
 import Quiz from "@/components/interactive/Quiz";
 import ReviewerAttribution from "@/components/compliance/ReviewerAttribution";
 
-export default function GuidePage({
+export default async function GuidePage({
   params
 }: {
-  params: { lang: string; slug: string };
+  params: Promise<{ lang: string; slug: string }>;
 }) {
-  const { meta, content } = getDocBySlug(params.lang, "guides", params.slug);
+  const { lang, slug } = await params;
+  const { meta, content } = getDocBySlug(lang, "guides", slug);
 
   return (
     <article className="prose max-w-none">
