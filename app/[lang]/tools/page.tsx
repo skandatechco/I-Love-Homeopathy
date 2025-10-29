@@ -1,12 +1,39 @@
+import { generateSEO, generateStructuredData } from "@/lib/seo";
+import StructuredData from "@/components/seo/StructuredData";
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+
+  return generateSEO({
+    title: "Tools",
+    description: "Practical utilities and resources for your homeopathic journey. Glossary, remedy finder, and downloadable guides.",
+    url: `/${lang}/tools`,
+    lang,
+  });
+}
+
 export default async function ToolsPage({
   params
 }: {
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  
+
+  const structuredData = generateStructuredData({
+    type: "WebSite",
+    title: "Tools",
+    description: "Practical utilities for homeopathic practice",
+    url: `/${lang}/tools`,
+  });
+
   return (
-    <article className="space-y-6">
+    <>
+      <StructuredData data={structuredData} />
+      <article className="space-y-6">
       <div className="space-y-4">
         <h1 className="hero-headline">Tools</h1>
         <p className="text-base leading-relaxed text-charcoal max-w-3xl">
@@ -52,6 +79,7 @@ export default async function ToolsPage({
         </a>
       </div>
     </article>
+    </>
   );
 }
 
