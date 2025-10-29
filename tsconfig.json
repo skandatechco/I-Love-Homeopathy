@@ -37,7 +37,6 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules",
-    "contentlayer.config.ts" // Documentation only, not active code
+    "node_modules"
   ]
 }
