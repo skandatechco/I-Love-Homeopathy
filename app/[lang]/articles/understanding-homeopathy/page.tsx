@@ -34,7 +34,7 @@ export default async function UnderstandingHomeopathyPage({
   return (
     <>
       <StructuredData data={structuredData} />
-      <article className="max-w-4xl mx-auto py-8 space-y-6">
+      <article className="max-w-4xl mx-auto pt-24 pb-8 space-y-6">
         <h1 className="font-playfair text-navy text-4xl md:text-5xl font-semibold leading-tight">
           Understanding Homeopathy
         </h1>

@@ -23,5 +23,9 @@ export default async function RemedyFinderPage({
 }) {
   const { lang } = await params;
 
-  return <RemedyFinderClient lang={lang} />;
+  return (
+    <div className="pt-24">
+      <RemedyFinderClient lang={lang} />
+    </div>
+  );
 }

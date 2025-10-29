@@ -48,7 +48,7 @@ export default async function GlossaryPage({
   return (
     <>
       <StructuredData data={structuredData} />
-      <article className="max-w-4xl mx-auto py-8 space-y-8">
+      <article className="max-w-4xl mx-auto pt-24 pb-8 space-y-8">
         <div className="space-y-4">
           <h1 className="font-playfair text-navy text-4xl md:text-5xl font-semibold leading-tight">
             Glossary

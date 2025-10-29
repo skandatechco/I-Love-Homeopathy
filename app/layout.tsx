@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import Container from "@/components/ui/Container";
-import LangSwitcher from "@/components/ui/LangSwitcher";
-import MainNav from "@/components/navigation/MainNav";
+import Header from "@/components/navigation/Header";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
 
@@ -47,7 +46,8 @@ export default function RootLayout({
         <StructuredData data={structuredData} />
       </head>
       <body className="min-h-screen flex flex-col">
-        {/* Global Header - replaced by Header component on homepage */}
+        {/* Global Header - appears on all pages */}
+        <Header />
 
         {/* Main content */}
         <main className="flex-1">

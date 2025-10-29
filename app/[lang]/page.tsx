@@ -3,8 +3,6 @@ import { listDocs } from "@/lib/mdx";
 import { getRemedyHref } from "@/lib/content";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
-import Header from "@/components/navigation/Header";
-import Card from "@/components/ui/Card";
 
 export async function generateMetadata({
   params
@@ -39,7 +37,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   return (
     <>
       <StructuredData data={structuredData} />
-      <Header />
       
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-ivory to-transparent via-sage/5 pt-28 md:pt-36 pb-16 md:pb-24">
