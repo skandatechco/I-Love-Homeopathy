@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import Container from "@/components/ui/Container";
 import LangSwitcher from "@/components/ui/LangSwitcher";
+import MainNav from "@/components/navigation/MainNav";
 
 export const metadata = {
   title: "I ❤️ Homeopathy",
@@ -29,28 +30,10 @@ export default function RootLayout({
                 </div>
               </div>
 
-              <nav className="flex flex-wrap items-center gap-4 text-xs text-textMain">
-                <a
-                  href="/en/guides/headache"
-                  className="hover:text-baholaNavy"
-                >
-                  Guides
-                </a>
-                <a
-                  href="/en/remedies/arsenicum-album"
-                  className="hover:text-baholaNavy"
-                >
-                  Remedies
-                </a>
-                <a
-                  href="/en/about"
-                  className="hover:text-baholaNavy"
-                >
-                  About
-                </a>
-
+              <div className="flex flex-wrap items-center gap-2">
+                <MainNav />
                 <LangSwitcher />
-              </nav>
+              </div>
             </div>
           </Container>
         </header>
