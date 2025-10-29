@@ -16,7 +16,7 @@ export default function EmailSignup() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-card border border-gray-200 bg-white p-4 text-xs leading-relaxed"
+      className="rounded-2xl border border-gray-200 bg-white p-4 text-xs leading-relaxed"
     >
       <div className="font-semibold text-sm text-[#1a1a1a]">
         Get updates (articles, webinars, research calls)
@@ -36,7 +36,7 @@ export default function EmailSignup() {
         />
         <button
           type="submit"
-          className="rounded-card bg-baholaNavy text-white px-3 py-1.5 text-xs font-medium hover:bg-baholaNavy/90"
+          className="rounded-2xl bg-navy text-white px-3 py-1.5 text-xs font-medium hover:bg-navy/90"
         >
           Sign up
         </button>

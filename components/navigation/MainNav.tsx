@@ -63,7 +63,7 @@ export default function MainNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-wrap items-center gap-2 md:gap-4 text-xs text-textMain">
+    <nav className="flex flex-wrap items-center gap-2 md:gap-4 text-xs text-charcoal">
       {navItems.map((item) => {
         const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
         
@@ -71,8 +71,8 @@ export default function MainNav() {
           <div key={item.href} className="relative group">
             <a
               href={item.href}
-              className={`px-2 py-1 rounded hover:text-baholaNavy transition-colors ${
-                isActive ? "text-baholaNavy font-semibold" : ""
+              className={`px-2 py-1 rounded hover:text-teal hover:text-gold transition-colors ${
+                isActive ? "text-navy font-semibold" : ""
               }`}
             >
               {item.name}
@@ -80,12 +80,12 @@ export default function MainNav() {
             
             {/* Submenu */}
             {item.submenu && (
-              <div className="absolute left-0 top-full mt-1 w-64 bg-white border border-borderSoft rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2">
+              <div className="absolute left-0 top-full mt-1 w-64 bg-white border border-mist rounded-2xl shadow-card opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2">
                 {item.submenu.map((subItem) => (
                   <a
                     key={subItem.href}
                     href={subItem.href}
-                    className="block px-3 py-2 text-xs hover:bg-pageBg rounded hover:text-baholaNavy"
+                    className="block px-3 py-2 text-xs hover:bg-ivory rounded hover:text-teal"
                   >
                     {subItem.name}
                   </a>

@@ -54,13 +54,13 @@ export default async function GuidePage({
     <>
       <StructuredData data={structuredData} />
       <article className="prose max-w-none">
-      <h1 className="text-2xl font-semibold text-[#1a1a1a]">{meta.title}</h1>
+      <h1 className="text-2xl font-playfair font-semibold text-navy">{meta.title}</h1>
 
       {meta.summary && (
-        <p className="text-sm text-gray-600 mt-1 max-w-prose">{meta.summary}</p>
+        <p className="text-sm text-charcoal/70 mt-1 max-w-prose">{meta.summary}</p>
       )}
 
-      <div className="text-[11px] text-gray-400 mt-2">
+      <div className="text-[11px] text-sage mt-2">
         {meta.date ? <>Updated {meta.date}</> : null}
       </div>
 

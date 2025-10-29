@@ -1,68 +1,115 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&family=Helvetica+Neue:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Bahola brand typography and colors */
+/* Global Design System */
+
 body {
-  @apply font-body text-[18px] text-textMain bg-pageBg antialiased;
+  @apply font-helvetica text-base text-charcoal bg-ivory antialiased;
   line-height: 1.6;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  @apply font-display;
+/* Typography Hierarchy */
+
+/* h1 / big hero: Playfair Display, weight 600, color navy */
+h1, .hero-headline {
+  @apply font-playfair font-semibold text-navy;
+  font-size: 3.75rem; /* 60px */
+  line-height: 1.1;
 }
 
-h1 {
-  @apply text-baholaNavy font-semibold;
+/* h2 section heading: Playfair Display, weight 600, color navy */
+h2, .section-headline {
+  @apply font-playfair font-semibold text-navy;
+  font-size: 2.5rem; /* 40px */
+  line-height: 1.2;
 }
 
-/* Headlines */
-.hero-headline {
-  @apply text-[48px] sm:text-[60px] font-display font-semibold text-baholaNavy leading-tight;
+/* h3 small heading / card title: Georgia 500 or Helvetica 600 */
+h3 {
+  @apply font-georgia font-medium text-navy;
+  /* Alternative: font-helvetica font-semibold */
 }
 
-.section-headline {
-  @apply text-[36px] sm:text-[40px] font-display font-semibold text-baholaNavy leading-tight;
+/* Body copy: Helvetica Neue 400, color charcoal */
+p, body {
+  @apply font-helvetica font-normal text-charcoal;
 }
 
-/* Body text */
-body {
-  @apply text-textMain;
-  font-size: 18px;
-  line-height: 1.6;
+/* Pull quotes / emphasis lines: Cormorant Garamond 500 italic, color sage */
+.pull-quote, blockquote {
+  @apply font-cormorant font-medium italic text-sage;
 }
 
-/* Legal / disclaimer */
+/* Legal / disclaimer text */
 .legal-text {
-  @apply text-[12px] text-textMuted;
+  @apply text-xs text-cream;
 }
 
+/* Header */
 header {
   @apply bg-white/80 backdrop-blur;
-  border-color: borderSoft;
+  border-color: mist;
 }
 
+/* Footer */
 footer {
-  @apply bg-baholaNavy text-white/90;
+  @apply bg-navy text-cream;
 }
 
+.footer-bottom {
+  @apply bg-navyDeep;
+}
+
+/* Links */
 a {
-  @apply underline-offset-4 hover:underline text-baholaNavy;
+  @apply underline-offset-4 hover:underline text-teal;
+  transition: color 0.2s;
 }
 
-/* Prose styling */
+a:hover {
+  @apply text-gold;
+}
+
+/* Card styling */
+.card {
+  @apply rounded-2xl shadow-card border border-mist;
+}
+
+/* Prose styling for MDX content */
 .prose {
   @apply prose-sm sm:prose-base;
 }
 
-.prose h1, .prose h2, .prose h3 {
-  @apply font-display text-baholaNavy font-semibold;
+.prose h1, .prose h2 {
+  @apply font-playfair font-semibold text-navy;
+}
+
+.prose h3 {
+  @apply font-georgia font-medium text-navy;
 }
 
 .prose p {
-  @apply text-textMain;
-  font-size: 18px;
+  @apply font-helvetica text-charcoal;
+  font-size: 1rem;
   line-height: 1.6;
+}
+
+.prose blockquote {
+  @apply font-cormorant font-medium italic text-sage border-l-4 border-sage pl-4;
+}
+
+/* Spacing rhythm utilities */
+.section-padding {
+  @apply py-16 md:py-24;
+}
+
+.content-width {
+  @apply max-w-7xl mx-auto;
+}
+
+.side-padding {
+  @apply px-6 md:px-12;
 }

@@ -9,7 +9,7 @@ export default async function EvidencePage({
     <article className="space-y-6">
       <div className="space-y-4">
         <h1 className="hero-headline">Evidence Hub</h1>
-        <p className="text-[18px] leading-relaxed text-textMain max-w-3xl">
+        <p className="text-base leading-relaxed text-charcoal max-w-3xl">
           Explore the scientific evidence, understand research methods, and learn to critically evaluate claims about homeopathy.
         </p>
       </div>
@@ -45,15 +45,15 @@ export default async function EvidencePage({
           <a
             key={item.href}
             href={`/${lang}/evidence/${item.href}`}
-            className="p-6 bg-white rounded-card border border-borderSoft hover:border-baholaNavy transition-colors group"
+            className="p-6 bg-white rounded-2xl border border-mist hover:border-navy transition-colors group shadow-card"
           >
-            <h3 className="text-2xl font-display font-semibold text-baholaNavy mb-3 group-hover:underline">
+            <h3 className="text-2xl font-georgia font-medium text-navy mb-3 group-hover:underline">
               {item.title}
             </h3>
-            <p className="text-sm text-textMain leading-relaxed mb-3">
+            <p className="text-sm text-charcoal leading-relaxed mb-3">
               {item.description}
             </p>
-            <span className="inline-block text-xs text-baholaTeal font-medium">
+            <span className="inline-block text-xs text-sage font-medium">
               Explore →
             </span>
           </a>
