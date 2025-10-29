@@ -47,26 +47,7 @@ export default function RootLayout({
         <StructuredData data={structuredData} />
       </head>
       <body className="min-h-screen flex flex-col">
-        {/* Global Header */}
-        <header className="border-b border-mist bg-white/80 backdrop-blur">
-          <Container>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <div className="text-lg font-playfair font-semibold text-navy">
-                  I ❤️ HOMEOPATHY
-                </div>
-                <div className="legal-text text-[11px]">
-                  Learn Responsibly. Consult Confidently. Contribute to Research.
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <MainNav />
-                <LangSwitcher />
-              </div>
-            </div>
-          </Container>
-        </header>
+        {/* Global Header - replaced by Header component on homepage */}
 
         {/* Main content */}
         <main className="flex-1">
@@ -74,65 +55,86 @@ export default function RootLayout({
         </main>
 
         {/* Global Footer */}
-        <footer className="bg-navy text-cream text-xs leading-relaxed">
-          <Container>
-            <div className="grid gap-6 md:grid-cols-4 py-8">
-              {/* Brand */}
-              <div className="space-y-3">
-                <div className="text-lg font-playfair font-semibold text-cream">
-                  I ❤️ HOMEOPATHY
-                </div>
-                <p className="text-xs text-cream/80">
-                  Learn Responsibly. Consult Confidently. Contribute to Research.
-                </p>
-              </div>
-
-              {/* Quick Links */}
-              <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-cream">Quick Links</h4>
-                <ul className="space-y-2 text-xs">
-                  <li><a href="/en/start-here" className="text-cream/80 hover:text-cream">Start Here</a></li>
-                  <li><a href="/en/learn" className="text-cream/80 hover:text-cream">Learn</a></li>
-                  <li><a href="/en/practice" className="text-cream/80 hover:text-cream">Practice</a></li>
-                  <li><a href="/en/evidence" className="text-cream/80 hover:text-cream">Evidence Hub</a></li>
-                </ul>
-              </div>
-
-              {/* Resources */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-cream">Resources</h4>
-                <ul className="space-y-2 text-xs">
-                  <li><a href="/en/conditions" className="text-cream/80 hover:text-cream">Conditions</a></li>
-                  <li><a href="/en/tools" className="text-cream/80 hover:text-cream">Tools</a></li>
-                  <li><a href="/en/blog" className="text-cream/80 hover:text-cream">Blog</a></li>
-                  <li><a href="/en/about" className="text-cream/80 hover:text-cream">About</a></li>
-                </ul>
-              </div>
-
-              {/* Legal */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-cream">Legal</h4>
-                <ul className="space-y-2 text-xs">
-                  <li><a href="/en/about" className="text-cream/80 hover:text-cream">Editorial Policy</a></li>
-                  <li><a href="/privacy" className="text-cream/80 hover:text-cream">Privacy Policy</a></li>
-                  <li><a href="/terms" className="text-cream/80 hover:text-cream">Terms of Use</a></li>
-                  <li><a href="/contact" className="text-cream/80 hover:text-cream">Contact</a></li>
-                </ul>
-              </div>
+        <footer className="bg-navy text-cream">
+          <div className="max-w-7xl mx-auto py-10 px-6 md:px-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Column 1 */}
+            <div>
+              <h3 className="font-playfair text-2xl mb-2">I ❤️ Homeopathy</h3>
+              <p className="text-cream/80 text-sm leading-relaxed font-helvetica">
+                An educational initiative dedicated to promoting
+                understanding and trust in homeopathy.
+              </p>
             </div>
 
-            {/* Bottom */}
-            <div className="bg-navyDeep border-t border-navy pt-6 mt-6">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="legal-text text-center sm:text-left">
-                  I ❤️ HOMEOPATHY · Educational use only · Not a substitute for medical advice.
-                </div>
-                <div className="legal-text">
-                  © {new Date().getFullYear()} Bahola. All rights reserved.
-                </div>
+            {/* Column 2 */}
+            <div>
+              <h4 className="font-helvetica font-semibold text-lg mb-3">Quick Links</h4>
+              <ul className="space-y-2 text-sm font-helvetica">
+                <li>
+                  <a href="/en/articles/understanding-homeopathy" className="hover:text-gold transition">
+                    About Homeopathy
+                  </a>
+                </li>
+                <li>
+                  <a href="/en/remedies" className="hover:text-gold transition">
+                    Remedies Library
+                  </a>
+                </li>
+                <li>
+                  <a href="/en/bach-remedies" className="hover:text-gold transition">
+                    Bach Flower Remedies
+                  </a>
+                </li>
+                <li>
+                  <a href="/en/research" className="hover:text-gold transition">
+                    Articles & Research
+                  </a>
+                </li>
+                <li>
+                  <a href="/en/doctors-corner" className="hover:text-gold transition">
+                    Doctors' Corner
+                  </a>
+                </li>
+                <li>
+                  <a href="/en/remedy-resonance" className="hover:text-gold transition">
+                    Stories of Healing
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3 */}
+            <div>
+              <h4 className="font-helvetica font-semibold text-lg mb-3">Connect</h4>
+              <p className="text-sm mb-3 font-helvetica">
+                Email:{" "}
+                <a href="mailto:hello@ilovehomeopathy.org" className="hover:text-gold">
+                  hello@ilovehomeopathy.org
+                </a>
+              </p>
+              <div className="flex space-x-4 text-xl text-cream/90">
+                <a href="#" className="hover:text-gold transition" aria-label="Facebook">
+                  f
+                </a>
+                <a href="#" className="hover:text-gold transition" aria-label="Instagram">
+                  i
+                </a>
+                <a href="#" className="hover:text-gold transition" aria-label="YouTube">
+                  y
+                </a>
+                <a href="#" className="hover:text-gold transition" aria-label="LinkedIn">
+                  in
+                </a>
               </div>
             </div>
-          </Container>
+          </div>
+
+          <div className="bg-navyDeep text-center py-4 text-xs text-cream/70 border-t border-cream/20 font-helvetica">
+            © {new Date().getFullYear()} I ❤️ Homeopathy. An initiative by Bahola Labs — nurturing homeopathy since 1939.{" "}
+            <a href="https://bahola.co" className="text-teal hover:text-gold ml-1">
+              Visit Bahola.co
+            </a>
+          </div>
         </footer>
       </body>
     </html>
