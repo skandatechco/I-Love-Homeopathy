@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { name: "Home", href: "/en" },
   { 
     name: "Start Here", 
     href: "/en/start-here",
@@ -57,7 +56,6 @@ const navItems = [
       { name: "Downloadables", href: "/en/tools/downloadables" },
     ]
   },
-  { name: "About", href: "/en/about" },
   { name: "Blog", href: "/en/blog" },
 ];
 
