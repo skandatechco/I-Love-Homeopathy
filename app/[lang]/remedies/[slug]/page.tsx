@@ -1,6 +1,8 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getDocBySlug } from "@/lib/mdx";
-
+import { getRemedyHref } from "@/lib/content";
+import { generateSEO, generateStructuredData } from "@/lib/seo";
+import StructuredData from "@/components/seo/StructuredData";
 import MedicalDisclaimer from "@/components/compliance/MedicalDisclaimer";
 import SupportiveCareNote from "@/components/compliance/SupportiveCareNote";
 import ReviewerAttribution from "@/components/compliance/ReviewerAttribution";
@@ -10,6 +12,27 @@ import BuyFromBaholaButton from "@/components/marketing/BuyFromBaholaButton";
 import ResearchCTA from "@/components/marketing/ResearchCTA";
 import Quiz from "@/components/interactive/Quiz";
 
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ lang: string; slug: string }>;
+}) {
+  const { lang, slug } = await params;
+  const { meta } = getDocBySlug(lang, "remedies", slug);
+  const url = getRemedyHref(lang, slug);
+
+  return generateSEO({
+    title: meta.title,
+    description: meta.summary || `Homeopathic remedy ${meta.title} - keynotes, traditional indications, and safety information with BHMS review.`,
+    url,
+    type: "article",
+    publishedTime: meta.date,
+    author: meta.reviewer || meta.author,
+    tags: meta.tags,
+    lang,
+  });
+}
+
 export default async function RemedyPage({
   params
 }: {
@@ -17,9 +40,22 @@ export default async function RemedyPage({
 }) {
   const { lang, slug } = await params;
   const { meta, content } = getDocBySlug(lang, "remedies", slug);
+  const url = getRemedyHref(lang, slug);
+
+  const structuredData = generateStructuredData({
+    type: "Article",
+    title: meta.title,
+    description: meta.summary,
+    url,
+    author: meta.reviewer || meta.author,
+    publishedTime: meta.date,
+    tags: meta.tags,
+  });
 
   return (
-    <article className="prose max-w-none">
+    <>
+      <StructuredData data={structuredData} />
+      <article className="prose max-w-none">
       {/* Title + summary + last updated */}
       <h1 className="text-2xl font-semibold text-[#1a1a1a]">
         {meta.title}
@@ -70,6 +106,7 @@ export default async function RemedyPage({
         </div>
       )}
     </article>
+    </>
   );
 }
 

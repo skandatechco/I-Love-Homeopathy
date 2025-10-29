@@ -2,11 +2,32 @@ import "@/styles/globals.css";
 import Container from "@/components/ui/Container";
 import LangSwitcher from "@/components/ui/LangSwitcher";
 import MainNav from "@/components/navigation/MainNav";
+import { generateSEO, generateStructuredData } from "@/lib/seo";
+import StructuredData from "@/components/seo/StructuredData";
 
-export const metadata = {
-  title: "I ❤️ Homeopathy",
+export const metadata = generateSEO({
+  title: "I ❤️ Homeopathy - Learn Homeopathy Responsibly",
   description:
-    "Learn Responsibly. Consult Confidently. Contribute to Research."
+    "Educational homeopathic resource with BHMS-reviewed content. Learn homeopathy fundamentals, remedy information, and evidence-based practices. Always consult healthcare professionals for medical concerns.",
+  url: "/",
+});
+
+// AI Crawler directives in metadata
+export const robots = {
+  index: true,
+  follow: true,
+  googleBot: {
+    index: true,
+    follow: true,
+    'max-snippet': -1,
+    'max-image-preview': 'large' as const,
+    'max-video-preview': -1,
+  },
+  // AI bots
+  'gptbot': {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -14,8 +35,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const structuredData = generateStructuredData({
+    type: "WebSite",
+    title: "I ❤️ Homeopathy",
+    description: "Educational homeopathic resource with BHMS-reviewed content",
+  });
+
   return (
     <html lang="en" className="bg-pageBg text-textMain">
+      <head>
+        <StructuredData data={structuredData} />
+      </head>
       <body className="min-h-screen flex flex-col">
         {/* Global Header */}
         <header className="border-b border-borderSoft bg-white/80 backdrop-blur">

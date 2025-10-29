@@ -1,11 +1,35 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getDocBySlug } from "@/lib/mdx";
+import { getGuideHref } from "@/lib/content";
+import { generateSEO, generateStructuredData } from "@/lib/seo";
+import StructuredData from "@/components/seo/StructuredData";
 import MedicalDisclaimer from "@/components/compliance/MedicalDisclaimer";
 import UrgentCareWarning from "@/components/compliance/UrgentCareWarning";
 import ConsultBaholaCTA from "@/components/marketing/ConsultBaholaCTA";
 import RemedyForCTA from "@/components/marketing/RemedyForCTA";
 import Quiz from "@/components/interactive/Quiz";
 import ReviewerAttribution from "@/components/compliance/ReviewerAttribution";
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ lang: string; slug: string }>;
+}) {
+  const { lang, slug } = await params;
+  const { meta } = getDocBySlug(lang, "guides", slug);
+  const url = getGuideHref(lang, slug);
+
+  return generateSEO({
+    title: meta.title,
+    description: meta.summary || `Learn about ${meta.title} - educational homeopathic guide with BHMS review.`,
+    url,
+    type: "article",
+    publishedTime: meta.date,
+    author: meta.reviewer || meta.author,
+    tags: meta.tags,
+    lang,
+  });
+}
 
 export default async function GuidePage({
   params
@@ -14,9 +38,22 @@ export default async function GuidePage({
 }) {
   const { lang, slug } = await params;
   const { meta, content } = getDocBySlug(lang, "guides", slug);
+  const url = getGuideHref(lang, slug);
+
+  const structuredData = generateStructuredData({
+    type: "Article",
+    title: meta.title,
+    description: meta.summary,
+    url,
+    author: meta.reviewer || meta.author,
+    publishedTime: meta.date,
+    tags: meta.tags,
+  });
 
   return (
-    <article className="prose max-w-none">
+    <>
+      <StructuredData data={structuredData} />
+      <article className="prose max-w-none">
       <h1 className="text-2xl font-semibold text-[#1a1a1a]">{meta.title}</h1>
 
       {meta.summary && (
@@ -49,5 +86,6 @@ export default async function GuidePage({
         <Quiz />
       </div>
     </article>
+    </>
   );
 }
