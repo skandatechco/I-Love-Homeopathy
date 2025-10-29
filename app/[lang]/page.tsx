@@ -14,12 +14,12 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const guides = listDocs(lang, "guides").slice(0, 3);
 
   return (
-    <section className="space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-xl font-semibold tracking-tight text-[#1a1a1a]">
+    <section className="space-y-8 py-8">
+      <div className="space-y-4">
+        <h1 className="section-headline">
           I ❤️ Homeopathy
         </h1>
-        <p className="text-sm text-gray-700 leading-relaxed max-w-prose">
+        <p className="text-[18px] leading-relaxed max-w-prose text-textMain">
           Gentle, responsible guidance on traditional homeopathic practice.
           Learn when self-care is reasonable, when to consult a doctor, and
           how Bahola supports education, clinical care, and research.
@@ -28,10 +28,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="space-y-2">
-          <div className="text-sm font-medium text-[#1a1a1a]">
+          <div className="text-sm font-semibold text-baholaNavy font-display">
             Common Conditions
           </div>
-          <div className="text-xs text-gray-600">
+          <div className="text-xs text-textMuted">
             When you should seek urgent care, and when you can monitor.
           </div>
           <ul className="mt-3 space-y-2 text-xs">
@@ -49,10 +49,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         </Card>
 
         <Card className="space-y-2">
-          <div className="text-sm font-medium text-[#1a1a1a]">
+          <div className="text-sm font-semibold text-baholaNavy font-display">
             Remedy Library
           </div>
-          <div className="text-xs text-gray-600">
+          <div className="text-xs text-textMuted">
             Keynotes, traditional indications, safety.
           </div>
           <ul className="mt-3 space-y-2 text-xs">

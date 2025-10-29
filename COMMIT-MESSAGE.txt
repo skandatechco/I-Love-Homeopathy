@@ -1,0 +1,14 @@
+feat: Production-ready deployment with TinaCMS integration
+
+- Fixed routing: moved remedies to app/[lang]/remedies/[slug]
+- Updated all pages to Next.js 15 async params API
+- Fixed Card component default export
+- Removed Pages Router i18n config (App Router compatible)
+- Implemented proper middleware for language routing
+- Added TinaCMS with admin panel at /admin
+- Configured sitemap generation
+- Fixed TypeScript config for Next.js 15
+- Updated .gitignore for Next.js and Vercel
+- All builds passing ✅
+- Ready for production deployment
+
