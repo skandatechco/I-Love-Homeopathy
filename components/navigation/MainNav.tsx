@@ -61,32 +61,16 @@ export default function MainNav({ textColor = "text-cream", hoverColor = "hover:
           }
 
           return (
-            <div
+            <MegaMenuWrapper
               key={item.href}
-              className="relative"
+              item={item}
+              isActive={isActive}
+              hoverColor={hoverColor}
+              isOpen={openDropdown === item.name}
               onMouseEnter={() => handleMouseEnter(item.name)}
               onMouseLeave={handleMouseLeave}
-            >
-              <a
-                href={item.href}
-                className={`transition ${hoverColor} ${
-                  isActive ? "font-semibold" : ""
-                }`}
-              >
-                {item.name}
-              </a>
-
-              {/* Dropdown Menu */}
-              {openDropdown === item.name && (
-                <div className="absolute top-full left-0 mt-2 z-50">
-                  {item.isMegaMenu && item.megaMenu ? (
-                    <MegaMenu item={item} textColor={textColor} />
-                  ) : (
-                    <DropdownMenu item={item} textColor={textColor} />
-                  )}
-                </div>
-              )}
-            </div>
+              textColor={textColor}
+            />
           );
         })}
       </nav>
@@ -126,6 +110,90 @@ function DropdownMenu({ item, textColor }: { item: NavItemType; textColor: strin
   );
 }
 
+// Wrapper component for dropdown/mega menu with smart positioning
+function MegaMenuWrapper({
+  item,
+  isActive,
+  hoverColor,
+  isOpen,
+  onMouseEnter,
+  onMouseLeave,
+  textColor,
+}: {
+  item: NavItemType;
+  isActive: boolean;
+  hoverColor: string;
+  isOpen: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  textColor: string;
+}) {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [alignRight, setAlignRight] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && menuRef.current) {
+      const menuRect = menuRef.current.getBoundingClientRect();
+      const dropdownWidth = item.isMegaMenu 
+        ? (item.name === "Conditions" ? 800 : 900)
+        : 240;
+      const spaceOnRight = window.innerWidth - menuRect.right;
+      const spaceOnLeft = menuRect.left;
+
+      // If mega menu would overflow on the right and there's more space on the left, align it to the right
+      // Also check if the menu would still overflow even when right-aligned
+      if (item.isMegaMenu) {
+        if (spaceOnRight < dropdownWidth && spaceOnLeft > spaceOnRight) {
+          setAlignRight(true);
+        } else if (spaceOnRight >= dropdownWidth) {
+          setAlignRight(false);
+        } else {
+          // If it would overflow either way, keep left-aligned (will be constrained by max-w)
+          setAlignRight(false);
+        }
+      } else {
+        // Regular dropdowns: right-align if there's not enough space on the right
+        setAlignRight(spaceOnRight < dropdownWidth && spaceOnLeft > spaceOnRight);
+      }
+    }
+  }, [isOpen, item.isMegaMenu, item.name]);
+
+  return (
+    <div
+      ref={menuRef}
+      className="relative"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <a
+        href={item.href}
+        className={`transition ${hoverColor} ${
+          isActive ? "font-semibold" : ""
+        }`}
+      >
+        {item.name}
+      </a>
+
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div
+          ref={dropdownRef}
+          className={`absolute top-full mt-2 z-50 ${
+            alignRight ? "right-0" : "left-0"
+          }`}
+        >
+          {item.isMegaMenu && item.megaMenu ? (
+            <MegaMenu item={item} textColor={textColor} />
+          ) : (
+            <DropdownMenu item={item} textColor={textColor} />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Mega Menu Component (for Remedies and Conditions)
 function MegaMenu({ item, textColor }: { item: NavItemType; textColor: string }) {
   if (!item.megaMenu) return null;
@@ -135,7 +203,7 @@ function MegaMenu({ item, textColor }: { item: NavItemType; textColor: string })
   return (
     <div
       className={`bg-white rounded-xl shadow-2xl border border-mist overflow-hidden ${
-        isConditions ? "w-[800px]" : "w-[900px]"
+        isConditions ? "w-[800px] max-w-[calc(100vw-2rem)]" : "w-[900px] max-w-[calc(100vw-2rem)]"
       }`}
     >
       <div className={`grid ${isConditions ? "grid-cols-[1fr_1fr_1fr_280px]" : "grid-cols-4"} gap-0`}>
