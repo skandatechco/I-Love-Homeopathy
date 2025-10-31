@@ -40,7 +40,7 @@ export default function Header() {
     };
   }, [isMobileMenuOpen]);
 
-  // Text colors change based on scroll state
+  // Text colors change based on scroll state - WCAG-AA compliant
   const textColor = isScrolled ? "text-cream" : "text-navy";
   const hoverColor = isScrolled ? "hover:text-gold" : "hover:text-teal";
 
@@ -69,7 +69,7 @@ export default function Header() {
               href={ctaLink.href}
               className={`border ${
                 isScrolled
-                  ? "border-teal text-teal hover:bg-teal hover:text-navy"
+                  ? "border-teal text-cream hover:bg-teal hover:text-navy"
                   : "border-navy text-navy hover:bg-navy hover:text-cream"
               } px-4 py-2 rounded-xl text-sm font-medium transition`}
             >

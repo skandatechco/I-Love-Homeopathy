@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { navItems, ctaLink } from "./navItems";
+import { useState } from "react";
+import { navItems, ctaLink, NavItemType } from "./navItems";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -11,6 +12,17 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ isOpen, onClose, textColor }: MobileMenuProps) {
   const pathname = usePathname();
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (itemName: string) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(itemName)) {
+      newExpanded.delete(itemName);
+    } else {
+      newExpanded.add(itemName);
+    }
+    setExpandedItems(newExpanded);
+  };
 
   if (!isOpen) return null;
 
@@ -56,24 +68,130 @@ export default function MobileMenu({ isOpen, onClose, textColor }: MobileMenuPro
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-6">
-            <ul className="space-y-2">
+            <ul className="space-y-1">
               {navItems.map((item) => {
                 const isActive =
                   pathname === item.href || pathname?.startsWith(item.href + "/");
+                const isExpanded = expandedItems.has(item.name);
+                const hasSubmenu = item.hasDropdown && (item.submenu || item.megaMenu);
 
                 return (
                   <li key={item.href}>
-                    <a
-                      href={item.href}
-                      onClick={onClose}
-                      className={`block px-4 py-3 rounded-xl font-helvetica text-sm font-medium transition ${
-                        isActive
-                          ? "bg-navy text-cream"
-                          : "text-charcoal hover:bg-ivory hover:text-navy"
-                      }`}
-                    >
-                      {item.name}
-                    </a>
+                    {hasSubmenu ? (
+                      <>
+                        <button
+                          onClick={() => toggleExpanded(item.name)}
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-helvetica text-sm font-medium transition ${
+                            isActive
+                              ? "bg-navy text-cream"
+                              : "text-charcoal hover:bg-ivory hover:text-navy"
+                          }`}
+                        >
+                          <span>{item.name}</span>
+                          <svg
+                            className={`w-4 h-4 transition-transform ${
+                              isExpanded ? "rotate-180" : ""
+                            }`}
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                        {isExpanded && (
+                          <ul className="mt-1 ml-4 space-y-1 border-l-2 border-mist pl-4">
+                            {item.submenu?.map((subItem, index) => (
+                              <li key={index}>
+                                <a
+                                  href={subItem.href}
+                                  onClick={onClose}
+                                  className="block px-4 py-2 rounded-lg font-helvetica text-sm text-charcoal/80 hover:bg-ivory hover:text-navy transition"
+                                >
+                                  {subItem.name}
+                                </a>
+                              </li>
+                            ))}
+                            {item.megaMenu?.columns.map((column, colIndex) => (
+                              <li key={colIndex} className="mt-3">
+                                <div className="px-4 py-1 mb-2">
+                                  <h4 className="font-helvetica font-semibold text-navy text-xs uppercase tracking-wide">
+                                    {column.title}
+                                  </h4>
+                                </div>
+                                <ul className="space-y-1">
+                                  {column.items.map((subItem, itemIndex) => (
+                                    <li key={itemIndex}>
+                                      <a
+                                        href={subItem.href}
+                                        onClick={onClose}
+                                        className="block px-4 py-2 rounded-lg font-helvetica text-sm text-charcoal/80 hover:bg-ivory hover:text-navy transition"
+                                      >
+                                        {subItem.name}
+                                      </a>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </li>
+                            ))}
+                            {item.megaMenu?.featurePanel && (
+                              <li className="mt-3">
+                                <div className="px-4 py-1 mb-2">
+                                  <h4 className="font-helvetica font-semibold text-navy text-xs uppercase tracking-wide">
+                                    {item.megaMenu.featurePanel.title}
+                                  </h4>
+                                </div>
+                                <ul className="space-y-1">
+                                  {item.megaMenu.featurePanel.items.map((subItem, index) => (
+                                    <li key={index}>
+                                      <a
+                                        href={subItem.href}
+                                        onClick={onClose}
+                                        className="block px-4 py-2 rounded-lg font-helvetica text-sm text-charcoal/80 hover:bg-ivory hover:text-navy transition"
+                                      >
+                                        {subItem.name}
+                                      </a>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </li>
+                            )}
+                            {/* Footer link */}
+                            {(item.submenu?.find((item) => item.footerLink) || 
+                              item.megaMenu?.featurePanel?.footerLink ||
+                              item.megaMenu?.footerLink) && (
+                              <li className="mt-3 pt-3 border-t border-mist">
+                                <a
+                                  href={item.href}
+                                  onClick={onClose}
+                                  className="block px-4 py-2 text-teal font-helvetica text-xs font-medium hover:text-sage transition"
+                                >
+                                  {item.submenu?.find((item) => item.footerLink)?.footerLink ||
+                                    item.megaMenu?.featurePanel?.footerLink ||
+                                    item.megaMenu?.footerLink ||
+                                    "Browse All →"}
+                                </a>
+                              </li>
+                            )}
+                          </ul>
+                        )}
+                      </>
+                    ) : (
+                      <a
+                        href={item.href}
+                        onClick={onClose}
+                        className={`block px-4 py-3 rounded-xl font-helvetica text-sm font-medium transition ${
+                          isActive
+                            ? "bg-navy text-cream"
+                            : "text-charcoal hover:bg-ivory hover:text-navy"
+                        }`}
+                      >
+                        {item.name}
+                      </a>
+                    )}
                   </li>
                 );
               })}
@@ -95,4 +213,3 @@ export default function MobileMenu({ isOpen, onClose, textColor }: MobileMenuPro
     </>
   );
 }
-
