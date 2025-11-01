@@ -131,40 +131,95 @@ function MegaMenuWrapper({
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [alignRight, setAlignRight] = useState(false);
+  const [isHoveringDropdown, setIsHoveringDropdown] = useState(false);
 
+  // Measure actual dropdown width after render to calculate accurate positioning
   useEffect(() => {
-    if (isOpen && menuRef.current) {
-      const menuRect = menuRef.current.getBoundingClientRect();
-      const dropdownWidth = item.isMegaMenu 
-        ? (item.name === "Conditions" ? 800 : 900)
-        : 240;
-      const spaceOnRight = window.innerWidth - menuRect.right;
-      const spaceOnLeft = menuRect.left;
+    if (isOpen && menuRef.current && dropdownRef.current) {
+      // Use requestAnimationFrame to ensure dropdown is rendered
+      requestAnimationFrame(() => {
+        if (!dropdownRef.current || !menuRef.current) return;
+        
+        const menuRect = menuRef.current.getBoundingClientRect();
+        const dropdownRect = dropdownRef.current.getBoundingClientRect();
+        const actualDropdownWidth = dropdownRect.width;
+        
+        // Safety margin to prevent edge overflow
+        const safetyMargin = 16; // 1rem
+        const spaceOnRight = window.innerWidth - menuRect.right - safetyMargin;
+        const spaceOnLeft = menuRect.left - safetyMargin;
 
-      // If mega menu would overflow on the right and there's more space on the left, align it to the right
-      // Also check if the menu would still overflow even when right-aligned
-      if (item.isMegaMenu) {
-        if (spaceOnRight < dropdownWidth && spaceOnLeft > spaceOnRight) {
-          setAlignRight(true);
-        } else if (spaceOnRight >= dropdownWidth) {
-          setAlignRight(false);
+        // Check if dropdown would overflow on the right
+        const wouldOverflowRight = menuRect.right + actualDropdownWidth > window.innerWidth - safetyMargin;
+
+        if (item.isMegaMenu) {
+          // For mega menus: right-align if would overflow and more space on left
+          if (wouldOverflowRight && spaceOnLeft > spaceOnRight) {
+            setAlignRight(true);
+          } else if (!wouldOverflowRight) {
+            setAlignRight(false);
+          } else {
+            // If would overflow either way, keep left-aligned (constrained by max-w)
+            setAlignRight(false);
+          }
         } else {
-          // If it would overflow either way, keep left-aligned (will be constrained by max-w)
-          setAlignRight(false);
+          // Regular dropdowns: right-align if not enough space on the right
+          setAlignRight(spaceOnRight < actualDropdownWidth && spaceOnLeft > spaceOnRight);
         }
-      } else {
-        // Regular dropdowns: right-align if there's not enough space on the right
-        setAlignRight(spaceOnRight < dropdownWidth && spaceOnLeft > spaceOnRight);
-      }
+      });
     }
   }, [isOpen, item.isMegaMenu, item.name]);
+
+  // Track hover state to keep menu open when moving between nav item and dropdown
+  const leaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleContainerLeave = () => {
+    // Give a small delay to allow mouse to enter dropdown/bridge area
+    leaveTimeoutRef.current = setTimeout(() => {
+      if (!isHoveringDropdown) {
+        onMouseLeave();
+      }
+    }, 150);
+  };
+
+  const handleDropdownEnter = () => {
+    // Clear any pending close timeout
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current);
+      leaveTimeoutRef.current = null;
+    }
+    setIsHoveringDropdown(true);
+  };
+
+  const handleDropdownLeave = () => {
+    setIsHoveringDropdown(false);
+    onMouseLeave();
+  };
+
+  const handleBridgeEnter = () => {
+    // Clear any pending close timeout
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current);
+      leaveTimeoutRef.current = null;
+    }
+    setIsHoveringDropdown(true);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (leaveTimeoutRef.current) {
+        clearTimeout(leaveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div
       ref={menuRef}
       className="relative"
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseLeave={handleContainerLeave}
     >
       <a
         href={item.href}
@@ -175,13 +230,24 @@ function MegaMenuWrapper({
         {item.name}
       </a>
 
+      {/* Invisible bridge area to prevent gap issues */}
+      {isOpen && (
+        <div 
+          className="absolute top-full left-0 right-0 h-2 z-40"
+          onMouseEnter={handleBridgeEnter}
+          onMouseLeave={() => setIsHoveringDropdown(false)}
+        />
+      )}
+
       {/* Dropdown Menu */}
       {isOpen && (
         <div
           ref={dropdownRef}
-          className={`absolute top-full mt-2 z-50 ${
+          className={`absolute top-full pt-2 z-50 ${
             alignRight ? "right-0" : "left-0"
           }`}
+          onMouseEnter={handleDropdownEnter}
+          onMouseLeave={handleDropdownLeave}
         >
           {item.isMegaMenu && item.megaMenu ? (
             <MegaMenu item={item} textColor={textColor} />
