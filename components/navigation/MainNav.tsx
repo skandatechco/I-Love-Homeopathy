@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { navItems, NavItemType } from "./navItems";
+import { useAnalytics } from "@/hooks/useAnalytics";
+import { createClickInternalNavEvent } from "@/lib/analytics/events";
 
 interface MainNavProps {
   textColor?: string;
@@ -13,6 +15,7 @@ export default function MainNav({ textColor = "text-cream", hoverColor = "hover:
   const pathname = usePathname();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
+  const { trackEvent } = useAnalytics();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -51,6 +54,11 @@ export default function MainNav({ textColor = "text-cream", hoverColor = "hover:
               <a
                 key={item.href}
                 href={item.href}
+                onClick={() => {
+                  trackEvent(
+                    createClickInternalNavEvent(pathname || "/", item.href, item.name)
+                  );
+                }}
                 className={`transition ${hoverColor} ${
                   isActive ? "font-semibold" : ""
                 }`}
@@ -80,6 +88,9 @@ export default function MainNav({ textColor = "text-cream", hoverColor = "hover:
 
 // Simple Dropdown Menu Component
 function DropdownMenu({ item, textColor }: { item: NavItemType; textColor: string }) {
+  const { trackEvent } = useAnalytics();
+  const pathname = usePathname();
+  
   if (!item.submenu) return null;
 
   return (
@@ -89,6 +100,11 @@ function DropdownMenu({ item, textColor }: { item: NavItemType; textColor: strin
           <li key={index}>
             <a
               href={subItem.href}
+              onClick={() => {
+                trackEvent(
+                  createClickInternalNavEvent(pathname || "/", subItem.href, subItem.name)
+                );
+              }}
               className="block px-5 py-2.5 font-helvetica text-sm text-charcoal hover:bg-ivory hover:text-navy transition"
             >
               {subItem.name}
@@ -132,6 +148,8 @@ function MegaMenuWrapper({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [alignRight, setAlignRight] = useState(false);
   const [isHoveringDropdown, setIsHoveringDropdown] = useState(false);
+  const { trackEvent } = useAnalytics();
+  const pathname = usePathname();
 
   // Measure actual dropdown width after render to calculate accurate positioning
   useEffect(() => {
@@ -223,6 +241,11 @@ function MegaMenuWrapper({
     >
       <a
         href={item.href}
+        onClick={() => {
+          trackEvent(
+            createClickInternalNavEvent(pathname || "/", item.href, item.name)
+          );
+        }}
         className={`transition ${hoverColor} ${
           isActive ? "font-semibold" : ""
         }`}
@@ -262,6 +285,9 @@ function MegaMenuWrapper({
 
 // Mega Menu Component (for Remedies and Conditions)
 function MegaMenu({ item, textColor }: { item: NavItemType; textColor: string }) {
+  const { trackEvent } = useAnalytics();
+  const pathname = usePathname();
+  
   if (!item.megaMenu) return null;
 
   const isConditions = item.name === "Conditions";
@@ -284,6 +310,11 @@ function MegaMenu({ item, textColor }: { item: NavItemType; textColor: string })
                 <li key={index}>
                   <a
                     href={subItem.href}
+                    onClick={() => {
+                      trackEvent(
+                        createClickInternalNavEvent(pathname || "/", subItem.href, subItem.name)
+                      );
+                    }}
                     className={`font-helvetica text-sm transition ${
                       subItem.name.includes("→") || subItem.name.includes("View all")
                         ? "text-teal font-medium hover:text-sage"

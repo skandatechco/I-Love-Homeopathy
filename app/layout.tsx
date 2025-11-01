@@ -3,6 +3,12 @@ import Container from "@/components/ui/Container";
 import Header from "@/components/navigation/Header";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
+import GA4Provider from "@/components/analytics/GA4Provider";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import PlausibleScript from "@/components/analytics/PlausibleScript";
+import ClarityScript from "@/components/analytics/ClarityScript";
+import PostHogProvider from "@/components/analytics/PostHogProvider";
 
 export const metadata = generateSEO({
   title: "I ❤️ Homeopathy - Learn Homeopathy Responsibly",
@@ -46,8 +52,10 @@ export default function RootLayout({
         <StructuredData data={structuredData} />
       </head>
       <body className="min-h-screen flex flex-col">
-        {/* Global Header - appears on all pages */}
-        <Header />
+        <GA4Provider>
+        <PostHogProvider>
+          {/* Global Header - appears on all pages */}
+          <Header />
 
         {/* Main content */}
         <main className="flex-1">
@@ -136,6 +144,12 @@ export default function RootLayout({
             </a>
           </div>
         </footer>
+        </PostHogProvider>
+        </GA4Provider>
+        <Analytics />
+        <SpeedInsights />
+        <PlausibleScript />
+        <ClarityScript />
       </body>
     </html>
   );
