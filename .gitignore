@@ -39,4 +39,5 @@ next-env.d.ts
 
 # TinaCMS
 .tina
-admin
+/admin
+!/app/admin
