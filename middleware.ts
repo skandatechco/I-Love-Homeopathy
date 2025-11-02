@@ -50,15 +50,14 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * CRITICAL: This matcher pattern excludes /admin paths from middleware.
-     * The negative lookahead (?!admin) means: match paths that do NOT start with "admin"
+     * IMPORTANT: We include /admin in the matcher so middleware runs and explicitly handles it.
+     * The early return in the function ensures /admin paths bypass language routing.
      * 
-     * Excluded paths:
+     * We still exclude:
      * - _next/static, _next/image (Next.js internal)
      * - favicon.ico
-     * - admin (all admin routes)
-     * - api (API routes)
+     * - api (API routes are handled separately, but we could include them too)
      */
-    '/((?!_next/static|_next/image|favicon\\.ico|admin|api).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|api).*)',
   ],
 };
