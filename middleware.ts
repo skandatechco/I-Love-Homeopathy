@@ -13,6 +13,13 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
   
+  // Redirect /en/admin to /admin (catch any old links or navigation)
+  if (pathname.startsWith('/en/admin') || pathname.startsWith('/hi/admin') || pathname.startsWith('/ta/admin')) {
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.pathname = pathname.replace(/^\/(en|hi|ta)\/admin/, '/admin');
+    return NextResponse.redirect(redirectUrl);
+  }
+  
   // Don't process if path is static asset or API
   if (
     pathname.startsWith('/_next') ||
@@ -43,12 +50,15 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - admin (admin dashboard and CMS - exact match /admin or /admin/*)
+     * CRITICAL: This matcher pattern excludes /admin paths from middleware.
+     * The negative lookahead (?!admin) means: match paths that do NOT start with "admin"
+     * 
+     * Excluded paths:
+     * - _next/static, _next/image (Next.js internal)
+     * - favicon.ico
+     * - admin (all admin routes)
+     * - api (API routes)
      */
-    '/((?!_next/static|_next/image|favicon\\.ico|admin).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|admin|api).*)',
   ],
 };
