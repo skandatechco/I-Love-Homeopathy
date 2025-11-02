@@ -7,11 +7,16 @@ const DEFAULT_LANG = 'en';
 export function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
   
+  // CRITICAL: Exclude /admin paths FIRST - before any other processing
+  // This prevents admin routes from being redirected to /en/admin
+  if (pathname.startsWith('/admin')) {
+    return NextResponse.next();
+  }
+  
   // Don't process if path is static asset or API
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname.startsWith('/admin') ||
     pathname.includes('.') ||
     pathname === '/favicon.ico'
   ) {
@@ -42,7 +47,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - admin (admin dashboard and CMS - exact match /admin or /admin/*)
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|admin).*)',
   ],
 };
