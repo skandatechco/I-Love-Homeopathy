@@ -19,7 +19,7 @@
     "gray-matter": "^4.0.3",
     "jsonwebtoken": "^9.0.2",
     "next": "^16.2.2",
-    "next-mdx-remote": "^4.4.1",
+    "next-mdx-remote": "^6.0.0",
     "next-sitemap": "^4.2.3",
     "postcss": "^8.4.41",
     "posthog-js": "^1.283.0",
