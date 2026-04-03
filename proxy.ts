@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 const SUPPORTED_LANGS = ['en', 'hi', 'ta'];
 const DEFAULT_LANG = 'en';
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
   
   // CRITICAL: Exclude /admin paths FIRST - before any other processing
@@ -50,7 +50,7 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * IMPORTANT: We include /admin in the matcher so middleware runs and explicitly handles it.
+     * IMPORTANT: We include /admin in the matcher so proxy runs and explicitly handles it.
      * The early return in the function ensures /admin paths bypass language routing.
      * 
      * We still exclude:

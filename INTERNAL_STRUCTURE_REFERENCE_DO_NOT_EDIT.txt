@@ -67,7 +67,7 @@ ilh-site/
 │  └─ PRD.md
 ├─ README-FUSION.md
 ├─ next.config.js
-├─ middleware.ts
+├─ proxy.ts
 ├─ package.json
 ├─ postcss.config.js
 ├─ tailwind.config.js

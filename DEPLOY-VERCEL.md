@@ -122,7 +122,7 @@ Once connected to GitHub:
 - Run `npm run build` locally first
 
 **Routes not working?**
-- Verify middleware.ts is included
+- Verify proxy.ts is included
 - Check language prefixes in URLs
 
 **Need help?**
