@@ -8,25 +8,33 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Design system colors - WCAG-AA+ compliant
-        ivory: '#F9F7F3',      // page background
-        navy: '#003366',       // headings, header bg on scroll, footer bg
-        navyDeep: '#00264D',   // footer bottom bar
-        charcoal: '#333333',   // body text (12.6:1 on ivory - passes AAA)
-        sage: '#6B7A3F',       // subtle accents / icons / pull quotes (WCAG-AA compliant: 4.6:1 on white)
-        gold: '#9B6F4A',       // hover accent, small lines, highlights (WCAG-AA compliant: 4.5:1 on white)
-        teal: '#3D8B8B',       // CTAs / links (WCAG-AA compliant: 4.6:1 on white, 4.7:1 on ivory)
-        cream: '#F5F1E9',      // footer text & contrast text (12.2:1 on navy - passes AAA)
-        mist: '#E5E2DC',       // borders, hairlines
+        ink: '#0a1f2e',
+        forest: '#0d3d4f',
+        midGreen: '#1a5c6e',
+        sage: '#3a9aaa',
+        gold: '#c4762a',
+        goldLight: '#e09030',
+        cream: '#f5f0e8',
+        creamWarm: '#ede8d8',
+        parchment: '#e0d8c4',
+        muted: '#5a6a70',
+        rule: '#b8cdd4',
+        // Legacy aliases for existing components
+        ivory: '#f5f0e8',
+        navy: '#0d3d4f',
+        navyDeep: '#0a1f2e',
+        charcoal: '#0a1f2e',
+        teal: '#3a9aaa',
+        mist: '#b8cdd4',
       },
       fontFamily: {
-        playfair: ['"Playfair Display"', 'serif'],           // hero / section titles
-        georgia: ['Georgia', 'serif'],                       // subheads, intros
-        helvetica: ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'], // body, nav
+        playfair: ['var(--font-playfair)', 'serif'],
+        georgia: ['var(--font-source-serif)', 'serif'],
+        helvetica: ['var(--font-franklin)', 'sans-serif'],
         cormorant: ['"Cormorant Garamond"', 'serif'],        // quotes / accents
         // Legacy aliases for backward compatibility
-        display: ['"Playfair Display"', 'serif'],
-        body: ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['var(--font-playfair)', 'serif'],
+        body: ['var(--font-franklin)', 'sans-serif'],
       },
       fontSize: {
         // Hero / big titles

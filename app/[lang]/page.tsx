@@ -84,64 +84,64 @@ function pickStories(
   return selected;
 }
 
-function SectionList({
-  contentLang,
+function Kicker({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">
+      {children}
+    </p>
+  );
+}
+
+function SectionHeading({
+  id,
   title,
-  eyebrow,
   intro,
+}: {
+  id: string;
+  title: string;
+  intro: string;
+}) {
+  return (
+    <div id={id} className="border-b-4 border-forest pb-4">
+      <h2 className="font-playfair text-3xl font-semibold text-forest md:text-4xl">
+        {title}
+      </h2>
+      <p className="mt-3 max-w-3xl font-georgia text-lg leading-8 text-muted">
+        {intro}
+      </p>
+    </div>
+  );
+}
+
+function StoryList({
+  contentLang,
   stories,
 }: {
   contentLang: string;
-  title: string;
-  eyebrow: string;
-  intro: string;
   stories: ArticleDoc[];
 }) {
   return (
-    <Card className="h-full overflow-hidden p-0">
-      <div className="border-b border-mist bg-ivory/70 px-6 py-4">
-        <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">
-          {eyebrow}
-        </p>
-        <h2 className="mt-2 font-playfair text-2xl font-semibold text-navy md:text-3xl">
-          {title}
-        </h2>
-        <p className="mt-2 max-w-2xl font-georgia text-base leading-relaxed text-charcoal/75">
-          {intro}
-        </p>
-      </div>
-
-      <div className="grid gap-0">
-        {stories.map((story, index) => (
-          <a
-            key={story.slug}
-            href={storyHref(contentLang, story)}
-            className={`group block px-6 py-5 transition hover:bg-ivory/60 ${
-              index < stories.length - 1 ? "border-b border-mist" : ""
-            }`}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.24em] text-sage">
-                  {SECTION_LABELS[story.section] || "Feature"}
-                </p>
-                <h3 className="mt-2 font-playfair text-xl font-semibold leading-tight text-navy transition group-hover:text-teal">
-                  {displayTitle(story)}
-                </h3>
-                <p className="mt-2 font-helvetica text-sm leading-6 text-charcoal/80">
-                  {displayExcerpt(
-                    story,
-                    "Read the full feature from the ILH editorial archive."
-                  )}
-                </p>
-              </div>
-              <span className="pt-1 font-helvetica text-xs font-medium uppercase tracking-[0.2em] text-gold">
-                {storyDate(story) || "Archive"}
-              </span>
-            </div>
-          </a>
-        ))}
-      </div>
+    <Card className="h-full overflow-hidden border-rule bg-white p-0 shadow-card">
+      {stories.map((story, index) => (
+        <a
+          key={story.slug}
+          href={storyHref(contentLang, story)}
+          className={`group block px-6 py-5 transition hover:bg-creamWarm/50 ${
+            index < stories.length - 1 ? "border-b border-rule" : ""
+          }`}
+        >
+          <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
+          <h3 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-forest transition group-hover:text-midGreen">
+            {displayTitle(story)}
+          </h3>
+          <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
+            {displayExcerpt(story, "Read the full feature from the ILH editorial archive.")}
+          </p>
+          <p className="mt-4 font-helvetica text-xs uppercase tracking-[0.2em] text-muted/80">
+            {storyDate(story) || "Archive"}
+          </p>
+        </a>
+      ))}
     </Card>
   );
 }
@@ -213,31 +213,26 @@ export default async function HomePage({
   )[0];
 
   const editorialDigest = pickStories(articles, 4, () => true, usedSlugs);
-
   const clinicalCases = pickStories(
     articles,
     3,
     (article) => article.section === "clinical-cases"
   );
-
   const philosophyStories = pickStories(
     articles,
     3,
     (article) => article.section === "philosophy"
   );
-
   const historyFeature = pickStories(
     articles,
     1,
     (article) => article.section === "history"
   )[0];
-
   const resonanceStories = pickStories(
     articles,
     4,
     (article) => article.section === "remedy-resonance"
   );
-
   const wellnessStories = pickStories(
     articles,
     3,
@@ -256,289 +251,267 @@ export default async function HomePage({
     <>
       <StructuredData data={structuredData} />
 
-      <div className="space-y-12 pb-12 pt-24 md:space-y-16 md:pt-28">
-        <section className="space-y-6">
-          <div className="border-y border-mist bg-ivory/80 px-4 py-3 font-helvetica text-[11px] uppercase tracking-[0.3em] text-charcoal/70">
-            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-              <span className="font-semibold text-gold">
-                The World's Journal of Classical Medicine
-              </span>
-              <span>Editorial front page</span>
+      <div className="space-y-12 bg-cream pb-12 pt-8 md:space-y-16">
+        <section className="border-y border-rule bg-creamWarm py-2">
+          <div className="flex items-center gap-4 overflow-hidden">
+            <span className="shrink-0 bg-gold px-3 py-1 font-helvetica text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+              Latest
+            </span>
+            <div className="flex min-w-0 flex-1 gap-8 overflow-x-auto whitespace-nowrap font-helvetica text-sm text-ink [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {articles.slice(0, 8).map((article) => (
+                <a
+                  key={article.slug}
+                  href={storyHref(contentLang, article)}
+                  className="transition hover:text-midGreen"
+                >
+                  {displayTitle(article)}
+                </a>
+              ))}
             </div>
           </div>
+        </section>
 
-          {contentLang !== lang && (
-            <div className="rounded-2xl border border-gold/30 bg-gold/10 px-5 py-4 font-helvetica text-sm leading-6 text-charcoal">
-              Showing the English editorial archive while translated homepage content
-              is prepared for this edition.
+        {contentLang !== lang && (
+          <section className="rounded-2xl border border-gold/30 bg-gold/10 px-5 py-4 font-helvetica text-sm leading-6 text-ink">
+            Showing the English editorial archive while translated homepage content
+            is prepared for this edition.
+          </section>
+        )}
+
+        {featuredStory && (
+          <section className="grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_340px]">
+            <div className="space-y-6">
+              <div className="border-b-4 border-forest pb-5">
+                <Kicker>{SECTION_LABELS[featuredStory.section] || "Lead Story"}</Kicker>
+                <h1 className="mt-4 max-w-5xl font-playfair text-4xl font-semibold leading-tight text-forest md:text-6xl">
+                  {displayTitle(featuredStory)}
+                </h1>
+                <p className="mt-5 max-w-3xl font-georgia text-xl leading-8 text-muted">
+                  {displayExcerpt(
+                    featuredStory,
+                    "Read the lead feature from the ILH editorial archive."
+                  )}
+                </p>
+                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-helvetica text-xs uppercase tracking-[0.18em] text-muted">
+                  <span>{storyDate(featuredStory) || "Editorial Archive"}</span>
+                  {featuredStory.readTime ? (
+                    <span>{featuredStory.readTime} min read</span>
+                  ) : null}
+                </div>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href={storyHref(contentLang, featuredStory)}
+                    className="inline-flex items-center justify-center bg-forest px-5 py-3 font-helvetica text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-midGreen"
+                  >
+                    Read the lead story
+                  </a>
+                  <a
+                    href={`/${contentLang}/articles`}
+                    className="inline-flex items-center justify-center border border-forest px-5 py-3 font-helvetica text-sm font-semibold uppercase tracking-[0.12em] text-forest transition hover:bg-forest hover:text-white"
+                  >
+                    Browse the archive
+                  </a>
+                </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-3">
+                {heroCompanions.map((story) => (
+                  <Card key={story.slug} className="border-rule bg-white">
+                    <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
+                    <h2 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-forest">
+                      {displayTitle(story)}
+                    </h2>
+                    <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
+                      {displayExcerpt(
+                        story,
+                        "Open this companion feature from the editorial front page."
+                      )}
+                    </p>
+                    <a
+                      href={storyHref(contentLang, story)}
+                      className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
+                    >
+                      Continue reading
+                    </a>
+                  </Card>
+                ))}
+              </div>
             </div>
-          )}
 
-          {featuredStory && (
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_360px]">
-              <Card className="overflow-hidden p-0">
-                <div className="border-b border-mist bg-gradient-to-br from-ivory via-white to-ivory/70 px-6 py-8 md:px-8 md:py-10">
-                  <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-                    {SECTION_LABELS[featuredStory.section] || "Lead Story"}
-                  </p>
-                  <h1 className="mt-4 max-w-4xl font-playfair text-4xl font-semibold leading-tight text-navy md:text-6xl">
-                    {displayTitle(featuredStory)}
-                  </h1>
-                  <p className="mt-5 max-w-3xl font-georgia text-lg leading-8 text-charcoal/85 md:text-[1.35rem]">
+            <aside className="space-y-6">
+              {remedyOfDay ? (
+                <div id="remedy-of-the-day">
+                  <Card className="border-forest bg-forest text-white shadow-card">
+                  <Kicker>Remedy of the Day</Kicker>
+                  <h2 className="mt-3 font-playfair text-3xl font-semibold leading-tight text-white">
+                    {displayTitle(remedyOfDay)}
+                  </h2>
+                  <p className="mt-3 font-helvetica text-sm leading-6 text-white/80">
                     {displayExcerpt(
-                      featuredStory,
-                      "Read the lead feature from the ILH editorial archive."
+                      remedyOfDay,
+                      "Read today's remedy feature from the ILH archive."
                     )}
                   </p>
-
-                  <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 font-helvetica text-xs uppercase tracking-[0.24em] text-charcoal/60">
-                    <span>{storyDate(featuredStory) || "Editorial Archive"}</span>
-                    {featuredStory.readTime ? (
-                      <span>{featuredStory.readTime} min read</span>
-                    ) : null}
-                  </div>
-
-                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <a
-                      href={storyHref(contentLang, featuredStory)}
-                      className="inline-flex items-center justify-center rounded-xl bg-navy px-5 py-3 font-helvetica text-sm font-semibold text-cream transition hover:bg-teal hover:text-navy"
-                    >
-                      Read the lead story
-                    </a>
-                    <a
-                      href={`/${contentLang}/articles`}
-                      className="inline-flex items-center justify-center rounded-xl border border-navy px-5 py-3 font-helvetica text-sm font-semibold text-navy transition hover:bg-navy hover:text-cream"
-                    >
-                      Browse the archive
-                    </a>
-                  </div>
+                  <a
+                    href={storyHref(contentLang, remedyOfDay)}
+                    className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-goldLight transition hover:text-white"
+                  >
+                    Open remedy feature
+                  </a>
+                  </Card>
                 </div>
+              ) : null}
 
-                <div className="grid gap-0 border-t border-mist md:grid-cols-3">
-                  {heroCompanions.map((story, index) => (
+              <Card className="overflow-hidden border-rule bg-white p-0">
+                <div className="border-b border-rule px-6 py-4">
+                  <Kicker>From the archive</Kicker>
+                </div>
+                <div className="divide-y divide-rule">
+                  {editorialDigest.map((story) => (
                     <a
                       key={story.slug}
                       href={storyHref(contentLang, story)}
-                      className={`group block px-6 py-5 transition hover:bg-ivory/60 ${
-                        index < heroCompanions.length - 1
-                          ? "border-b border-mist md:border-b-0 md:border-r"
-                          : ""
-                      }`}
+                      className="group block px-6 py-4 transition hover:bg-creamWarm/50"
                     >
-                      <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.24em] text-sage">
-                        {SECTION_LABELS[story.section] || "Feature"}
-                      </p>
-                      <h2 className="mt-2 font-playfair text-2xl font-semibold leading-tight text-navy transition group-hover:text-teal">
+                      <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
+                      <h3 className="mt-2 font-playfair text-xl font-semibold leading-tight text-forest transition group-hover:text-midGreen">
                         {displayTitle(story)}
-                      </h2>
-                      <p className="mt-2 font-helvetica text-sm leading-6 text-charcoal/80">
-                        {displayExcerpt(
-                          story,
-                          "Open this companion feature from the editorial front page."
-                        )}
-                      </p>
+                      </h3>
                     </a>
                   ))}
                 </div>
               </Card>
 
-              <div className="space-y-6">
-                {remedyOfDay ? (
-                  <Card className="overflow-hidden p-0">
-                    <div className="border-b border-mist bg-navy px-6 py-4 text-cream">
-                      <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-                        Remedy of the Day
-                      </p>
-                    </div>
-                    <div className="space-y-4 px-6 py-6">
-                      <h2 className="font-playfair text-2xl font-semibold text-navy">
-                        {displayTitle(remedyOfDay)}
-                      </h2>
-                      <p className="font-helvetica text-sm leading-6 text-charcoal/80">
-                        {displayExcerpt(
-                          remedyOfDay,
-                          "Read today's remedy feature from the ILH archive."
-                        )}
-                      </p>
-                      <a
-                        href={storyHref(contentLang, remedyOfDay)}
-                        className="font-helvetica text-sm font-semibold text-teal underline-offset-4 transition hover:text-sage hover:underline"
-                      >
-                        Open remedy feature
-                      </a>
-                    </div>
+              {quizFeature ? (
+                <div id="remedy-quiz">
+                  <Card className="border-rule bg-white">
+                  <Kicker>Test your materia medica</Kicker>
+                  <h2 className="mt-3 font-playfair text-2xl font-semibold text-forest">
+                    {displayTitle(quizFeature)}
+                  </h2>
+                  <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
+                    {displayExcerpt(
+                      quizFeature,
+                      "Challenge yourself with a remedy quiz from the editorial archive."
+                    )}
+                  </p>
+                  <a
+                    href={storyHref(contentLang, quizFeature)}
+                    className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
+                  >
+                    Take the challenge
+                  </a>
                   </Card>
-                ) : null}
+                </div>
+              ) : null}
 
-                <Card className="overflow-hidden p-0">
-                  <div className="border-b border-mist bg-ivory/70 px-6 py-4">
-                    <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-                      From the archive
-                    </p>
-                  </div>
-                  <div className="divide-y divide-mist">
-                    {editorialDigest.map((story) => (
-                      <a
-                        key={story.slug}
-                        href={storyHref(contentLang, story)}
-                        className="group block px-6 py-4 transition hover:bg-ivory/60"
-                      >
-                        <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.24em] text-sage">
-                          {SECTION_LABELS[story.section] || "Feature"}
-                        </p>
-                        <h3 className="mt-2 font-playfair text-xl font-semibold leading-tight text-navy transition group-hover:text-teal">
-                          {displayTitle(story)}
-                        </h3>
-                      </a>
-                    ))}
-                  </div>
-                </Card>
-
-                {quizFeature ? (
-                  <Card className="bg-gradient-to-br from-teal/10 via-white to-gold/10">
-                    <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-                      Test your materia medica
-                    </p>
-                    <h2 className="mt-3 font-playfair text-2xl font-semibold text-navy">
-                      {displayTitle(quizFeature)}
-                    </h2>
-                    <p className="mt-3 font-helvetica text-sm leading-6 text-charcoal/80">
-                      {displayExcerpt(
-                        quizFeature,
-                        "Challenge yourself with a remedy quiz from the editorial archive."
-                      )}
-                    </p>
-                    <a
-                      href={storyHref(contentLang, quizFeature)}
-                      className="mt-4 inline-flex font-helvetica text-sm font-semibold text-teal underline-offset-4 transition hover:text-sage hover:underline"
-                    >
-                      Take the challenge
-                    </a>
-                  </Card>
-                ) : null}
-
+              <div id="newsletter">
                 <EmailSignup />
               </div>
-            </div>
-          )}
+            </aside>
+          </section>
+        )}
+
+        <section className="grid gap-8 lg:grid-cols-2">
+          <div id="clinical-cases" className="space-y-6">
+            <SectionHeading
+              id="clinical-cases-heading"
+              title="Clinical Cases"
+              intro="Practice stories, observations, and case-led learning from the ILH archive."
+            />
+            <StoryList contentLang={contentLang} stories={clinicalCases} />
+          </div>
+
+          <div id="philosophy" className="space-y-6">
+            <SectionHeading
+              id="philosophy-heading"
+              title="Philosophy of Homeopathy"
+              intro="Core principles, Organon thinking, and modern interpretive essays."
+            />
+            <StoryList contentLang={contentLang} stories={philosophyStories} />
+          </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-2">
-          <SectionList
-            contentLang={contentLang}
-            eyebrow="Section module"
-            title="Clinical Cases"
-            intro="Practice stories, observations, and case-led learning from the ILH archive."
-            stories={clinicalCases}
-          />
-          <SectionList
-            contentLang={contentLang}
-            eyebrow="Section module"
-            title="Philosophy of Homeopathy"
-            intro="Core principles, Organon thinking, and modern interpretive essays."
-            stories={philosophyStories}
-          />
-        </section>
-
-        <section className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.8fr)]">
-          <Card className="overflow-hidden p-0">
-            <div className="border-b border-mist bg-ivory/70 px-6 py-4">
-              <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-                Archive focus
-              </p>
-              <h2 className="mt-2 font-playfair text-2xl font-semibold text-navy md:text-3xl">
-                History of Homeopathy
-              </h2>
-            </div>
-
-            {historyFeature ? (
-              <div className="space-y-4 px-6 py-6">
-                <h3 className="font-playfair text-3xl font-semibold leading-tight text-navy">
-                  {displayTitle(historyFeature)}
-                </h3>
-                <p className="font-georgia text-base leading-7 text-charcoal/80">
-                  {displayExcerpt(
-                    historyFeature,
-                    "Discover one of the defining stories in the history of homeopathy."
-                  )}
-                </p>
-                <a
-                  href={storyHref(contentLang, historyFeature)}
-                  className="inline-flex font-helvetica text-sm font-semibold text-teal underline-offset-4 transition hover:text-sage hover:underline"
-                >
-                  Read the history feature
-                </a>
-              </div>
-            ) : (
-              <div className="px-6 py-6 font-helvetica text-sm text-charcoal/75">
-                History features will appear here as the archive is curated.
-              </div>
-            )}
-          </Card>
-
-          <Card className="overflow-hidden p-0">
-            <div className="border-b border-mist bg-ivory/70 px-6 py-4">
-              <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-                Section module
-              </p>
-              <h2 className="mt-2 font-playfair text-2xl font-semibold text-navy md:text-3xl">
-                Remedy Resonance
-              </h2>
-              <p className="mt-2 max-w-2xl font-georgia text-base leading-relaxed text-charcoal/75">
-                Practical remedy stories, keynote differentials, and field notes from the archive.
-              </p>
-            </div>
-
-            <div className="grid gap-0 md:grid-cols-2">
-              {resonanceStories.map((story, index) => (
-                <a
-                  key={story.slug}
-                  href={storyHref(contentLang, story)}
-                  className={`group block px-6 py-5 transition hover:bg-ivory/60 ${
-                    index % 2 === 0 ? "md:border-r md:border-mist" : ""
-                  } ${index < resonanceStories.length - 2 ? "border-b border-mist" : ""}`}
-                >
-                  <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.24em] text-sage">
-                    {SECTION_LABELS[story.section] || "Feature"}
+        <section className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.9fr)]">
+          <div id="history" className="space-y-6">
+            <SectionHeading
+              id="history-heading"
+              title="History of Homeopathy"
+              intro="People, institutions, and moments that shaped the tradition and practice of classical medicine."
+            />
+            <Card className="border-rule bg-white shadow-card">
+              {historyFeature ? (
+                <>
+                  <Kicker>Archive focus</Kicker>
+                  <h3 className="mt-3 font-playfair text-3xl font-semibold leading-tight text-forest">
+                    {displayTitle(historyFeature)}
+                  </h3>
+                  <p className="mt-3 font-georgia text-base leading-7 text-muted">
+                    {displayExcerpt(
+                      historyFeature,
+                      "Discover one of the defining stories in the history of homeopathy."
+                    )}
                   </p>
-                  <h3 className="mt-2 font-playfair text-xl font-semibold leading-tight text-navy transition group-hover:text-teal">
+                  <a
+                    href={storyHref(contentLang, historyFeature)}
+                    className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
+                  >
+                    Read the history feature
+                  </a>
+                </>
+              ) : (
+                <p className="font-helvetica text-sm leading-6 text-muted">
+                  History features will appear here as the archive is curated.
+                </p>
+              )}
+            </Card>
+          </div>
+
+          <div id="remedy-resonance" className="space-y-6">
+            <SectionHeading
+              id="remedy-resonance-heading"
+              title="Remedy Resonance"
+              intro="Practical remedy stories, keynote differentials, and field notes from the archive."
+            />
+            <div className="grid gap-6 md:grid-cols-2">
+              {resonanceStories.map((story) => (
+                <Card key={story.slug} className="border-rule bg-white shadow-card">
+                  <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
+                  <h3 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-forest">
                     {displayTitle(story)}
                   </h3>
-                  <p className="mt-2 font-helvetica text-sm leading-6 text-charcoal/80">
+                  <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
                     {displayExcerpt(
                       story,
                       "Explore a remedy resonance feature from the archive."
                     )}
                   </p>
-                </a>
+                  <a
+                    href={storyHref(contentLang, story)}
+                    className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
+                  >
+                    Explore the guide
+                  </a>
+                </Card>
               ))}
             </div>
-          </Card>
+          </div>
         </section>
 
-        <section className="space-y-6">
-          <div className="border-b border-mist pb-4">
-            <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-              Section module
-            </p>
-            <h2 className="mt-2 font-playfair text-3xl font-semibold text-navy md:text-4xl">
-              Living Well
-            </h2>
-            <p className="mt-3 max-w-3xl font-georgia text-lg leading-8 text-charcoal/80">
-              Wellness writing, lifestyle insights, and supportive reading from the ILH archive.
-            </p>
-          </div>
-
+        <section id="wellness" className="space-y-6">
+          <SectionHeading
+            id="wellness-heading"
+            title="Living Well"
+            intro="Wellness writing, lifestyle insights, and supportive reading from the ILH archive."
+          />
           <div className="grid gap-6 lg:grid-cols-3">
             {wellnessStories.map((story) => (
-              <Card key={story.slug} className="flex h-full flex-col">
-                <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.24em] text-sage">
-                  {SECTION_LABELS[story.section] || "Feature"}
-                </p>
-                <h3 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-navy">
+              <Card key={story.slug} className="flex h-full flex-col border-rule bg-white shadow-card">
+                <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
+                <h3 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-forest">
                   {displayTitle(story)}
                 </h3>
-                <p className="mt-3 flex-1 font-helvetica text-sm leading-6 text-charcoal/80">
+                <p className="mt-3 flex-1 font-helvetica text-sm leading-6 text-muted">
                   {displayExcerpt(
                     story,
                     "Read a wellness feature from the ILH editorial archive."
@@ -546,7 +519,7 @@ export default async function HomePage({
                 </p>
                 <a
                   href={storyHref(contentLang, story)}
-                  className="mt-4 inline-flex font-helvetica text-sm font-semibold text-teal underline-offset-4 transition hover:text-sage hover:underline"
+                  className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
                 >
                   Read the story
                 </a>
