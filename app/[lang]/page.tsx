@@ -1,6 +1,5 @@
 import { isSupportedLang } from "@/lib/i18n";
-import { listDocs } from "@/lib/mdx";
-import { getRemedyHref } from "@/lib/content";
+import { getRemedies, getRemedyHref } from "@/lib/content";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
 
@@ -14,7 +13,7 @@ export async function generateMetadata({
 
   return generateSEO({
     title: "Learn Homeopathy Responsibly",
-    description: "I ❤️ Homeopathy - Educational homeopathic resource with BHMS-reviewed content. Learn homeopathy fundamentals, remedy information, evidence-based practices, and when to consult healthcare professionals.",
+    description: "I ?? Homeopathy - Educational homeopathic resource with BHMS-reviewed content. Learn homeopathy fundamentals, remedy information, evidence-based practices, and when to consult healthcare professionals.",
     url: `/${lang}`,
     lang,
   });
@@ -23,13 +22,12 @@ export async function generateMetadata({
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: langParam } = await params;
   const lang = isSupportedLang(langParam) ? langParam : "en";
-  
-  // Get sample remedies for preview
-  const remedies = listDocs(lang, "remedies").slice(0, 3);
+
+  const remedies = (await getRemedies(lang)).slice(0, 3);
 
   const structuredData = generateStructuredData({
     type: "WebSite",
-    title: "I ❤️ Homeopathy",
+    title: "I ?? Homeopathy",
     description: "Educational homeopathic resource with BHMS-reviewed content",
     url: `/${lang}`,
   });
@@ -37,14 +35,12 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   return (
     <>
       <StructuredData data={structuredData} />
-      
-      {/* Hero Section */}
+
       <section className="bg-gradient-to-b from-ivory to-transparent via-sage/5 pt-28 md:pt-36 pb-16 md:pb-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-12 items-center">
-          {/* Text Block */}
           <div>
             <h1 className="font-playfair text-navy text-4xl md:text-5xl font-semibold leading-tight mb-6">
-              Homeopathy — the art and science of natural healing
+              Homeopathy � the art and science of natural healing
             </h1>
 
             <p className="font-georgia text-charcoal text-lg leading-relaxed mb-8">
@@ -69,12 +65,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             </div>
           </div>
 
-          {/* Visual / Illustration */}
           <div className="relative">
             <div className="w-full h-64 md:h-80 rounded-2xl bg-white/60 border border-mist shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex items-center justify-center">
-              {/* Placeholder: replace with Image component later */}
               <span className="font-cormorant text-sage text-xl italic text-center px-6 leading-relaxed">
-                &quot;Healing begins when we listen to the whole person — not just the symptom.&quot;
+                &quot;Healing begins when we listen to the whole person � not just the symptom.&quot;
               </span>
             </div>
             <div className="absolute -z-10 -top-6 -right-6 w-24 h-24 rounded-2xl bg-sage/10 blur-xl" />
@@ -82,7 +76,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         </div>
       </section>
 
-      {/* Why Homeopathy Section */}
       <section className="bg-ivory py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12 text-center">
           <h2 className="font-playfair text-navy text-3xl md:text-4xl font-semibold mb-4">
@@ -119,7 +112,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         </div>
       </section>
 
-      {/* Remedies Library Preview */}
       <section className="bg-ivory py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
@@ -128,20 +120,20 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                 Explore the world of remedies
               </h2>
               <p className="font-georgia text-charcoal/80 text-lg leading-relaxed">
-                Every remedy tells a story — of nature, human emotion, and healing.
+                Every remedy tells a story � of nature, human emotion, and healing.
               </p>
             </div>
             <a
               href={`/${lang}/remedies`}
               className="text-teal font-helvetica text-sm font-medium underline underline-offset-4 hover:text-sage transition"
             >
-              Browse all remedies →
+              Browse all remedies ?
             </a>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
             {remedies.length > 0 ? (
-              remedies.map((r, i) => (
+              remedies.map((r) => (
                 <div
                   key={r.slug}
                   className="bg-white rounded-2xl border border-mist p-6 shadow-[0_12px_24px_rgba(0,0,0,0.03)]"
@@ -150,18 +142,17 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                     {r.title}
                   </div>
                   <div className="font-helvetica text-charcoal text-sm leading-relaxed mb-4">
-                    {r.summary || "Discover the unique characteristics and healing potential of this remedy."}
+                    {r.excerpt || "Discover the unique characteristics and healing potential of this remedy."}
                   </div>
                   <a
                     href={getRemedyHref(lang, r.slug)}
                     className="text-teal font-helvetica text-sm font-medium hover:text-sage transition underline underline-offset-4"
                   >
-                    Read more →
+                    Read more ?
                   </a>
                 </div>
               ))
             ) : (
-              // Fallback content
               [
                 {
                   name: "Arsenicum Album",
@@ -190,7 +181,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                     href={`/${lang}/remedies/${r.name.toLowerCase().replace(/ /g, "-")}`}
                     className="text-teal font-helvetica text-sm font-medium hover:text-sage transition underline underline-offset-4"
                   >
-                    Read more →
+                    Read more ?
                   </a>
                 </div>
               ))
@@ -199,7 +190,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         </div>
       </section>
 
-      {/* Doctors' Corner */}
       <section className="bg-ivory py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <h2 className="font-playfair text-navy text-3xl md:text-4xl font-semibold mb-4 max-w-3xl">
@@ -214,17 +204,17 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               {
                 name: "Dr. Rajan Sankaran",
                 loc: "India",
-                quote: "\"Every remedy is a reflection of human nature.\"",
+                quote: '"Every remedy is a reflection of human nature."',
               },
               {
                 name: "Dr. Martien Brands",
                 loc: "Netherlands",
-                quote: "\"Integrating evidence with empathy is the medicine of tomorrow.\"",
+                quote: '"Integrating evidence with empathy is the medicine of tomorrow."',
               },
               {
                 name: "Dr. Nancy Herrick",
                 loc: "USA",
-                quote: "\"Each remedy tells a story, if we listen deeply.\"",
+                quote: '"Each remedy tells a story, if we listen deeply."',
               },
             ].map((doc, i) => (
               <div
@@ -233,7 +223,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-14 h-14 rounded-xl bg-sage/20 flex items-center justify-center text-sage font-helvetica text-sm font-semibold">
-                    {/* Replace with Image component of doctor */}
                     Dr
                   </div>
                   <div>
@@ -252,7 +241,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                   href={`/${lang}/doctors-corner`}
                   className="mt-4 text-teal font-helvetica text-sm font-medium underline underline-offset-4 hover:text-sage transition"
                 >
-                  Read interview →
+                  Read interview ?
                 </a>
               </div>
             ))}
@@ -260,7 +249,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         </div>
       </section>
 
-      {/* Stories of Healing */}
       <section className="bg-ivory py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
@@ -278,18 +266,18 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               href={`/${lang}/remedy-resonance`}
               className="text-teal font-helvetica text-sm font-medium underline underline-offset-4 hover:text-sage transition"
             >
-              Read stories →
+              Read stories ?
             </a>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
             {[
               {
-                title: "\"I finally felt listened to.\"",
-                body: "After months of feeling dismissed, I met a homeopath who asked about my sleep, fears, stress, even childhood patterns — not just my pain.",
+                title: '"I finally felt listened to."',
+                body: "After months of feeling dismissed, I met a homeopath who asked about my sleep, fears, stress, even childhood patterns � not just my pain.",
               },
               {
-                title: "\"It wasn't instant. It was steady.\"",
+                title: '"It wasn\'t instant. It was steady."',
                 body: "For me it wasn't a miracle overnight. It was gradual, and it felt like my system was settling back into itself.",
               },
             ].map((story, i) => (

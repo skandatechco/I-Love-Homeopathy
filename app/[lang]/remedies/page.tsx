@@ -1,6 +1,5 @@
 import { isSupportedLang } from "@/lib/i18n";
-import { listDocs } from "@/lib/mdx";
-import { getRemedyHref } from "@/lib/content";
+import { getRemedies, getRemedyHref } from "@/lib/content";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
 
@@ -27,7 +26,7 @@ export default async function RemediesPage({
 }) {
   const { lang: langParam } = await params;
   const lang = isSupportedLang(langParam) ? langParam : "en";
-  const remedies = listDocs(lang, "remedies");
+  const remedies = await getRemedies(lang);
 
   const structuredData = generateStructuredData({
     type: "WebSite",
@@ -45,7 +44,7 @@ export default async function RemediesPage({
             Remedy Library
           </h1>
           <p className="font-georgia text-charcoal text-lg leading-relaxed max-w-3xl">
-            Every remedy tells a story — of nature, human emotion, and healing.
+            Every remedy tells a story � of nature, human emotion, and healing.
             Browse our comprehensive collection of homeopathic remedies, each with keynotes,
             traditional indications, and safety information reviewed by BHMS-certified practitioners.
           </p>
@@ -62,13 +61,13 @@ export default async function RemediesPage({
                 <h3 className="font-helvetica text-navy font-semibold text-lg mb-2 group-hover:text-teal transition">
                   {remedy.title}
                 </h3>
-                {remedy.summary && (
+                {remedy.excerpt && (
                   <p className="font-helvetica text-charcoal text-sm leading-relaxed mb-4">
-                    {remedy.summary}
+                    {remedy.excerpt}
                   </p>
                 )}
                 <span className="text-teal font-helvetica text-sm font-medium hover:text-sage transition underline underline-offset-4">
-                  Read more →
+                  Read more ?
                 </span>
               </a>
             ))}
@@ -84,4 +83,3 @@ export default async function RemediesPage({
     </>
   );
 }
-

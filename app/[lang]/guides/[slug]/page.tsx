@@ -1,6 +1,6 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getDocBySlug } from "@/lib/mdx";
-import { getGuideHref } from "@/lib/content";
+import { notFound } from "next/navigation";
+import { getGuideBySlug, getGuideHref } from "@/lib/content";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
 import MedicalDisclaimer from "@/components/compliance/MedicalDisclaimer";
@@ -16,15 +16,17 @@ export async function generateMetadata({
   params: Promise<{ lang: string; slug: string }>;
 }) {
   const { lang, slug } = await params;
-  const { meta } = getDocBySlug(lang, "guides", slug);
+  const meta = await getGuideBySlug(lang, slug);
+  if (!meta) notFound();
   const url = getGuideHref(lang, slug);
 
   return generateSEO({
     title: meta.title,
-    description: meta.summary || `Learn about ${meta.title} - educational homeopathic guide with BHMS review.`,
+    description: meta.excerpt || `Learn about ${meta.title} - educational homeopathic guide with BHMS review.`,
     url,
     type: "article",
     publishedTime: meta.date,
+    modifiedTime: meta.updated,
     author: meta.reviewer || meta.author,
     tags: meta.tags,
     lang,
@@ -37,16 +39,18 @@ export default async function GuidePage({
   params: Promise<{ lang: string; slug: string }>;
 }) {
   const { lang, slug } = await params;
-  const { meta, content } = getDocBySlug(lang, "guides", slug);
+  const meta = await getGuideBySlug(lang, slug);
+  if (!meta) notFound();
   const url = getGuideHref(lang, slug);
 
   const structuredData = generateStructuredData({
     type: "Article",
     title: meta.title,
-    description: meta.summary,
+    description: meta.excerpt,
     url,
     author: meta.reviewer || meta.author,
     publishedTime: meta.date,
+    modifiedTime: meta.updated,
     tags: meta.tags,
   });
 
@@ -54,38 +58,36 @@ export default async function GuidePage({
     <>
       <StructuredData data={structuredData} />
       <article className="prose max-w-none">
-      <h1 className="text-2xl font-playfair font-semibold text-navy">{meta.title}</h1>
+        <h1 className="text-2xl font-playfair font-semibold text-navy">{meta.title}</h1>
 
-      {meta.summary && (
-        <p className="text-sm text-charcoal/70 mt-1 max-w-prose">{meta.summary}</p>
-      )}
+        {meta.excerpt && (
+          <p className="text-sm text-charcoal/70 mt-1 max-w-prose">{meta.excerpt}</p>
+        )}
 
-      <div className="text-[11px] text-sage mt-2">
-        {meta.date ? <>Updated {meta.date}</> : null}
-      </div>
+        <div className="text-[11px] text-sage mt-2">{meta.date ? <>Updated {meta.date}</> : null}</div>
 
-      <UrgentCareWarning
-        redFlags={[
-          "Symptoms are rapidly getting worse",
-          "Severe pain, trauma, or neurological symptoms",
-          "Child is listless or unresponsive",
-          "Breathing difficulty at rest"
-        ]}
-      />
+        <UrgentCareWarning
+          redFlags={[
+            "Symptoms are rapidly getting worse",
+            "Severe pain, trauma, or neurological symptoms",
+            "Child is listless or unresponsive",
+            "Breathing difficulty at rest",
+          ]}
+        />
 
-      <section className="mt-6 prose prose-sm max-w-none">
-        <MDXRemote source={content} />
-      </section>
+        <section className="mt-6 prose prose-sm max-w-none">
+          <MDXRemote source={meta.body} />
+        </section>
 
-      <ReviewerAttribution reviewer={meta.reviewer} />
-      <MedicalDisclaimer />
+        <ReviewerAttribution reviewer={meta.reviewer} />
+        <MedicalDisclaimer />
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        <ConsultBaholaCTA />
-        <RemedyForCTA />
-        <Quiz />
-      </div>
-    </article>
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <ConsultBaholaCTA />
+          <RemedyForCTA />
+          <Quiz />
+        </div>
+      </article>
     </>
   );
 }

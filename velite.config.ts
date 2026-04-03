@@ -1,60 +1,181 @@
-import { defineCollection, defineConfig, s } from 'velite'
+import { defineCollection, defineConfig, s } from "velite";
 
-// Shared fields schema (matches Contentlayer structure)
-const sharedFields = {
-  title: s.string(), // Required
-  slug: s.string().optional(), // Auto-generated from filename if not provided
-  date: s.string().optional(), // Date as string
-  author: s.string().default('ILH Editorial Team'),
-  summary: s.string().optional(), // Also used as 'excerpt'
-  tags: s.array(s.string()).optional(),
-  featured: s.boolean().default(false),
+const ARTICLE_SECTIONS = [
+  "remedy-quiz",
+  "remedy-of-the-day",
+  "philosophy",
+  "clinical-cases",
+  "history",
+  "remedy-resonance",
+  "wellness",
+  "book-reviews",
+] as const;
+
+type ArticleSection = (typeof ARTICLE_SECTIONS)[number];
+
+const meta = {
+  title: s.string(),
+  slug: s.string(),
+  date: s.isodate(),
+  updated: s.isodate().optional(),
+  excerpt: s.string().optional(),
+  author: s.string().optional(),
+  reviewer: s.string().optional(),
+  tags: s.array(s.string()).default([]),
+  categories: s.array(s.string()).default([]),
   image: s.string().optional(),
+  featured: s.boolean().default(false),
+  published: s.boolean().default(true),
   readTime: s.number().optional(),
-  reviewer: s.string().optional(), // BHMS reviewer (ILH-specific)
-  researchable: s.boolean().default(false), // Show PBR CTA (ILH-specific)
+  autoTranslated: s.boolean().default(false),
+  reviewStatus: s
+    .enum([
+      "approved",
+      "needs-medical-review",
+      "needs-translation-review",
+      "draft",
+    ])
+    .default("draft"),
+  disclaimer: s.string().optional(),
+  body: s.raw(),
+};
+
+function getArticleSection(sourcePath: string, categories: string[]): ArticleSection {
+  const normalized = sourcePath.replace(/\\/g, "/");
+  const relative = normalized.replace(/^en\/articles\//, "");
+  const segments = relative.split("/").filter(Boolean);
+  const nestedSection = segments.length > 1 ? segments[0] : undefined;
+
+  if (nestedSection && ARTICLE_SECTIONS.includes(nestedSection as ArticleSection)) {
+    return nestedSection as ArticleSection;
+  }
+
+  const categorySection = categories.find((category) =>
+    ARTICLE_SECTIONS.includes(category as ArticleSection)
+  );
+
+  if (categorySection) {
+    return categorySection as ArticleSection;
+  }
+
+  return "philosophy";
 }
 
-// Article / Guide collection
+function withReviewGuard<T extends Record<string, unknown>>(schema: any) {
+  return schema.superRefine((data: T & { reviewStatus: string; reviewer?: string }, ctx: any) => {
+    if (data.reviewStatus === "approved" && !data.reviewer) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reviewer"],
+        message: "reviewer is required when reviewStatus is approved",
+      });
+    }
+  });
+}
+
 const articles = defineCollection({
-  name: 'Article',
-  pattern: '**/guides/**/*.mdx',
-  schema: s.object({
-    ...sharedFields,
-    // Article-specific fields can be added here
-  }),
-})
+  name: "Article",
+  pattern: "en/articles/**/*.mdx",
+  schema: withReviewGuard(
+    s.object({
+      ...meta,
+      sourcePath: s.path(),
+    })
+  ).transform((data: any) => ({
+    ...(() => {
+      const section = getArticleSection(data.sourcePath, data.categories);
+      return {
+        section,
+        permalink: `/en/articles/${section}/${data.slug}`,
+      };
+    })(),
+    ...data,
+  })),
+});
 
-// Remedy collection
 const remedies = defineCollection({
-  name: 'Remedy',
-  pattern: '**/remedies/**/*.mdx',
-  schema: s.object({
-    ...sharedFields,
-    researchable: s.boolean().default(false),
-  }),
-})
+  name: "Remedy",
+  pattern: "en/remedies/**/*.mdx",
+  schema: withReviewGuard(
+    s.object({
+      ...meta,
+      latinName: s.string().optional(),
+      kingdom: s
+        .enum(["plant", "mineral", "animal", "nosode", "other"])
+        .optional(),
+      keynotes: s.array(s.string()).default([]),
+      researchable: s.boolean().default(false),
+      potencies: s.array(s.string()).default([]),
+      shopUrl: s.string().optional(),
+    })
+  ).transform((data: any) => ({
+    ...data,
+    permalink: `/en/remedies/${data.slug}`,
+  })),
+});
 
-// Quiz collection
+const guides = defineCollection({
+  name: "Guide",
+  pattern: "en/guides/**/*.mdx",
+  schema: withReviewGuard(
+    s.object({
+      ...meta,
+      condition: s.string().optional(),
+      remediesDiscussed: s.array(s.string()).default([]),
+    })
+  ).transform((data: any) => ({
+    ...data,
+    permalink: `/en/guides/${data.slug}`,
+  })),
+});
+
 const quizzes = defineCollection({
-  name: 'Quiz',
-  pattern: '**/quizzes/**/*.mdx',
-  schema: s.object({
-    ...sharedFields,
-    questions: s.array(s.string()).optional(),
-  }),
-})
+  name: "Quiz",
+  pattern: "en/quizzes/**/*.mdx",
+  schema: withReviewGuard(
+    s.object({
+      ...meta,
+      difficulty: s
+        .enum(["beginner", "intermediate", "advanced"])
+        .default("beginner"),
+    })
+  ).transform((data: any) => ({
+    ...data,
+    permalink: `/en/quizzes/${data.slug}`,
+  })),
+});
 
-// Blog post collection
-const blogPosts = defineCollection({
-  name: 'BlogPost',
-  pattern: '**/blog/**/*.mdx',
-  schema: s.object({
-    ...sharedFields,
-  }),
-})
+const siteCopy = defineCollection({
+  name: "SiteCopy",
+  pattern: "en/site-copy/**/*.mdx",
+  schema: withReviewGuard(
+    s.object({
+      ...meta,
+    })
+  ).transform((data: any) => ({
+    ...data,
+    permalink: `/en/${data.slug}`,
+  })),
+});
 
 export default defineConfig({
-  collections: { articles, remedies, quizzes, blogPosts },
-})
-
+  root: "content",
+  output: {
+    data: ".velite",
+    assets: "public/static",
+    base: "/static/",
+    name: "[name]-[hash:6].[ext]",
+    clean: true,
+  },
+  collections: {
+    articles,
+    remedies,
+    guides,
+    quizzes,
+    siteCopy,
+  },
+  mdx: {
+    remarkPlugins: [],
+    rehypePlugins: [],
+  },
+});

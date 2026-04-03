@@ -14,7 +14,7 @@ interface GA4Event {
 // Convert our analytics event to GA4 format
 function convertToGA4Event(event: AnalyticsEvent): GA4Event {
   const baseParams: Record<string, any> = {
-    page_path: event.page_path || window.location.pathname,
+    page_path: "page_path" in event ? event.page_path : window.location.pathname,
     page_title: "page_title" in event ? event.page_title : document.title,
     timestamp_micros: Date.now() * 1000,
   };
@@ -143,8 +143,9 @@ function convertToGA4Event(event: AnalyticsEvent): GA4Event {
       };
 
     default:
+      // Handle any unhandled event types
       return {
-        name: event.event_name,
+        name: (event as AnalyticsEvent).event_name,
         params: baseParams,
       };
   }

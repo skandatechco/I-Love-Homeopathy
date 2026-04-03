@@ -41,3 +41,16 @@ next-env.d.ts
 .tina
 /admin
 !/app/admin
+
+# Velite
+.velite
+
+# Migration files
+*.xlsx
+migrate-wordpress.py
+migration-errors.json
+ilh-homepage.html
+PROJECT-STATUS-REPORT.md
+
+# OMX
+.omx/
