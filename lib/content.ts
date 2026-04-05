@@ -6,7 +6,19 @@
   siteCopy,
 } from "../.velite";
 
-export type ArticleDoc = (typeof articles)[number];
+type RawArticleDoc = (typeof articles)[number];
+export type ArticleSection =
+  | "book-reviews"
+  | "clinical-cases"
+  | "history"
+  | "philosophy"
+  | "remedy-of-the-day"
+  | "remedy-quiz"
+  | "remedy-resonance"
+  | "wellness";
+export type ArticleDoc = RawArticleDoc & {
+  section: ArticleSection;
+};
 export type RemedyDoc = (typeof remedies)[number];
 export type GuideDoc = (typeof guides)[number];
 export type QuizDoc = (typeof quizzes)[number];
@@ -21,12 +33,58 @@ export interface ContentCollections {
   siteCopy: SiteCopyDoc[];
 }
 
-function byDateDesc<T extends { date: string }>(a: T, b: T) {
-  return b.date.localeCompare(a.date);
+function byDateDesc<T extends { date?: string | null }>(a: T, b: T) {
+  return (b.date ?? "").localeCompare(a.date ?? "");
 }
 
 function byTitleAsc<T extends { title: string }>(a: T, b: T) {
   return a.title.localeCompare(b.title);
+}
+
+const CATEGORY_SECTION_MAP: Record<string, ArticleSection> = {
+  "remedy quiz": "remedy-quiz",
+  "remedy of the day": "remedy-of-the-day",
+  "remedy of the day.": "remedy-of-the-day",
+  "remedy-of-the-day": "remedy-of-the-day",
+  "clinical tips": "clinical-cases",
+  philosophy: "philosophy",
+  ponderings: "philosophy",
+  history: "history",
+  "remedy resonance": "remedy-resonance",
+  wellness: "wellness",
+  "book reviews": "book-reviews",
+  "book review": "book-reviews",
+};
+
+function deriveArticleSection(article: RawArticleDoc): ArticleSection {
+  for (const category of article.categories ?? []) {
+    const normalized = category.trim().toLowerCase();
+    const mapped = CATEGORY_SECTION_MAP[normalized];
+    if (mapped) return mapped;
+  }
+
+  const normalizedSection = article.section?.trim().toLowerCase();
+  if (
+    normalizedSection === "book-reviews" ||
+    normalizedSection === "clinical-cases" ||
+    normalizedSection === "history" ||
+    normalizedSection === "philosophy" ||
+    normalizedSection === "remedy-of-the-day" ||
+    normalizedSection === "remedy-quiz" ||
+    normalizedSection === "remedy-resonance" ||
+    normalizedSection === "wellness"
+  ) {
+    return normalizedSection;
+  }
+
+  return "philosophy";
+}
+
+function normalizeArticle(article: RawArticleDoc): ArticleDoc {
+  return {
+    ...article,
+    section: deriveArticleSection(article),
+  };
 }
 
 function onlyEnglish<T>(lang: string, docs: T[]): T[] {
@@ -64,11 +122,17 @@ export function getSiteCopyHref(lang: string, slug: string) {
 export async function getArticles(lang: string) {
   return onlyEnglish(
     lang,
-    [...articles].filter((article) => article.published).sort(byDateDesc)
+    [...articles]
+      .filter((article) => article.published)
+      .map(normalizeArticle)
+      .sort(byDateDesc)
   );
 }
 
-export async function getArticleBySlug(lang: string, slug: string) {
+export async function getArticleBySlug(
+  lang: string,
+  slug: string
+): Promise<ArticleDoc | null> {
   const docs = await getArticles(lang);
   return bySlug(docs, slug);
 }
@@ -77,7 +141,7 @@ export async function getArticleBySectionAndSlug(
   lang: string,
   section: string,
   slug: string
-) {
+): Promise<ArticleDoc | null> {
   const docs = await getArticles(lang);
   return bySectionAndSlug(docs, section, slug);
 }

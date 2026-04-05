@@ -175,6 +175,8 @@ export default async function HomePage({
   const contentLang = localizedArticles.length > 0 ? lang : "en";
   const articles =
     localizedArticles.length > 0 ? localizedArticles : await getArticles("en");
+  const tickerItems = articles.slice(0, 8);
+  const loopingTickerItems = [...tickerItems, ...tickerItems];
 
   const usedSlugs = new Set<string>();
   const featuredStory =
@@ -257,16 +259,19 @@ export default async function HomePage({
             <span className="shrink-0 bg-gold px-3 py-1 font-helvetica text-[10px] font-bold uppercase tracking-[0.2em] text-white">
               Latest
             </span>
-            <div className="flex min-w-0 flex-1 gap-8 overflow-x-auto whitespace-nowrap font-helvetica text-sm text-ink [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {articles.slice(0, 8).map((article) => (
-                <a
-                  key={article.slug}
-                  href={storyHref(contentLang, article)}
-                  className="transition hover:text-midGreen"
-                >
-                  {displayTitle(article)}
-                </a>
-              ))}
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <div className="ticker-track-scroll flex items-center gap-8 whitespace-nowrap font-helvetica text-sm text-ink">
+                {loopingTickerItems.map((article, index) => (
+                  <a
+                    key={`${article.slug}-${index}`}
+                    href={storyHref(contentLang, article)}
+                    className="transition hover:text-midGreen"
+                  >
+                    {displayTitle(article)}
+                    <span className="ml-8 text-rule">·</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -342,22 +347,22 @@ export default async function HomePage({
               {remedyOfDay ? (
                 <div id="remedy-of-the-day">
                   <Card className="border-forest bg-forest text-white shadow-card">
-                  <Kicker>Remedy of the Day</Kicker>
-                  <h2 className="mt-3 font-playfair text-3xl font-semibold leading-tight text-white">
-                    {displayTitle(remedyOfDay)}
-                  </h2>
-                  <p className="mt-3 font-helvetica text-sm leading-6 text-white/80">
-                    {displayExcerpt(
-                      remedyOfDay,
-                      "Read today's remedy feature from the ILH archive."
-                    )}
-                  </p>
-                  <a
-                    href={storyHref(contentLang, remedyOfDay)}
-                    className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-goldLight transition hover:text-white"
-                  >
-                    Open remedy feature
-                  </a>
+                    <Kicker>Remedy of the Day</Kicker>
+                    <h2 className="mt-3 font-playfair text-3xl font-semibold leading-tight text-white">
+                      {displayTitle(remedyOfDay)}
+                    </h2>
+                    <p className="mt-3 font-helvetica text-sm leading-6 text-white/80">
+                      {displayExcerpt(
+                        remedyOfDay,
+                        "Read today's remedy feature from the ILH archive."
+                      )}
+                    </p>
+                    <a
+                      href={storyHref(contentLang, remedyOfDay)}
+                      className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-goldLight transition hover:text-white"
+                    >
+                      Open remedy feature
+                    </a>
                   </Card>
                 </div>
               ) : null}
@@ -385,22 +390,22 @@ export default async function HomePage({
               {quizFeature ? (
                 <div id="remedy-quiz">
                   <Card className="border-rule bg-white">
-                  <Kicker>Test your materia medica</Kicker>
-                  <h2 className="mt-3 font-playfair text-2xl font-semibold text-forest">
-                    {displayTitle(quizFeature)}
-                  </h2>
-                  <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
-                    {displayExcerpt(
-                      quizFeature,
-                      "Challenge yourself with a remedy quiz from the editorial archive."
-                    )}
-                  </p>
-                  <a
-                    href={storyHref(contentLang, quizFeature)}
-                    className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
-                  >
-                    Take the challenge
-                  </a>
+                    <Kicker>Test your materia medica</Kicker>
+                    <h2 className="mt-3 font-playfair text-2xl font-semibold text-forest">
+                      {displayTitle(quizFeature)}
+                    </h2>
+                    <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
+                      {displayExcerpt(
+                        quizFeature,
+                        "Challenge yourself with a remedy quiz from the editorial archive."
+                      )}
+                    </p>
+                    <a
+                      href={storyHref(contentLang, quizFeature)}
+                      className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
+                    >
+                      Take the challenge
+                    </a>
                   </Card>
                 </div>
               ) : null}

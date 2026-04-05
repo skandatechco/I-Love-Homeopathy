@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&family=Helvetica+Neue:wght@300;400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,7 +5,7 @@
 /* Global Design System */
 
 body {
-  @apply font-helvetica text-base text-charcoal bg-ivory antialiased;
+  @apply bg-cream font-georgia text-base text-ink antialiased;
   line-height: 1.6;
 }
 
@@ -56,7 +54,7 @@ header {
 
 /* Footer */
 footer {
-  @apply bg-navy text-cream;
+  @apply bg-ink text-white;
 }
 
 .footer-bottom {
@@ -112,4 +110,18 @@ a:hover {
 
 .side-padding {
   @apply px-6 md:px-12;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track-scroll {
+  animation: ticker 40s linear infinite;
+  width: max-content;
 }

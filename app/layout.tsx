@@ -66,7 +66,7 @@ const navItems = [
   { label: "Remedy Resonance", href: "/en#remedy-resonance" },
   { label: "Wellness", href: "/en#wellness" },
   { label: "Book Reviews", href: "/en/articles" },
-  { label: "Find a Homeopath", href: "/en/start-here" },
+  { label: "Find a Homeopath", href: "https://findahomeopath.com" },
 ];
 
 export default function RootLayout({
@@ -169,6 +169,8 @@ export default function RootLayout({
                       <a
                         key={item.label}
                         href={item.href}
+                        target={item.href.startsWith("http") ? "_blank" : undefined}
+                        rel={item.href.startsWith("http") ? "noreferrer" : undefined}
                         className={`flex items-center border-r border-white/10 px-[18px] font-helvetica text-[12px] font-semibold uppercase tracking-[0.07em] transition ${
                           index === 0
                             ? "bg-gold font-bold text-forest"
