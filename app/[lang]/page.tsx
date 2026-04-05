@@ -133,8 +133,6 @@ export default async function HomePage({
   const history = pickStories(articles, 4, (article) => article.section === "history");
   const resonance = pickStories(articles, 4, (article) => article.section === "remedy-resonance");
   const wellness = pickStories(articles, 3, (article) => article.section === "wellness");
-  const tickerItems = [...articles.slice(0, 5), ...articles.slice(0, 5)];
-
   const structuredData = generateStructuredData({
     type: "WebSite",
     title: "I Love Homeopathy",
@@ -145,24 +143,7 @@ export default async function HomePage({
   return (
     <>
       <StructuredData data={structuredData} />
-        <div className="homepage-reference">
-          <div className="ticker">
-            <div className="container">
-              <div className="ticker-inner">
-                <span className="ticker-label">Latest</span>
-                <div style={{ overflow: "hidden", flex: 1 }}>
-                  <div className="ticker-track ticker-track-scroll">
-                  {tickerItems.map((article, index) => (
-                    <span key={`${article.slug}-${index}`} className="ticker-item">
-                      {displayTitle(article)} <span className="ticker-sep">·</span>
-                    </span>
-                  ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+      <div className="homepage-reference">
         <div className="hero-section">
           <div className="hero-primary">
             <div className="hero-img-wrap">

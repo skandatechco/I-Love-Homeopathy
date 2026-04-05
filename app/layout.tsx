@@ -8,6 +8,7 @@ import GA4Provider from "@/components/analytics/GA4Provider";
 import PlausibleScript from "@/components/analytics/PlausibleScript";
 import PostHogProvider from "@/components/analytics/PostHogProvider";
 import StructuredData from "@/components/seo/StructuredData";
+import { getArticleHref, getArticles } from "@/lib/content";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 
 const playfair = Playfair_Display({
@@ -58,22 +59,24 @@ export const robots = {
 
 const navItems = [
   { label: "Home", href: "/en", className: "nav-item nav-home active" },
-  { label: "Remedy of the Day", href: "/en#remedy-of-the-day", className: "nav-item" },
-  { label: "Remedy Quiz", href: "/en#quiz-module", className: "nav-item" },
-  { label: "Clinical Cases", href: "/en#clinical-cases", className: "nav-item" },
-  { label: "Philosophy", href: "/en#philosophy", className: "nav-item" },
-  { label: "History", href: "/en#history", className: "nav-item" },
-  { label: "Remedy Resonance", href: "/en#remedy-resonance", className: "nav-item" },
-  { label: "Wellness", href: "/en#wellness", className: "nav-item" },
-  { label: "Book Reviews", href: "/en/articles/book-reviews/dynamic-medicine-the-world-according-to-homeopathy", className: "nav-item" },
+  { label: "Remedy of the Day", href: "/en/articles/remedy-of-the-day", className: "nav-item" },
+  { label: "Remedy Quiz", href: "/en/articles/remedy-quiz", className: "nav-item" },
+  { label: "Clinical Cases", href: "/en/articles/clinical-cases", className: "nav-item" },
+  { label: "Philosophy", href: "/en/articles/philosophy", className: "nav-item" },
+  { label: "History", href: "/en/articles/history", className: "nav-item" },
+  { label: "Remedy Resonance", href: "/en/articles/remedy-resonance", className: "nav-item" },
+  { label: "Wellness", href: "/en/articles/wellness", className: "nav-item" },
+  { label: "Book Reviews", href: "/en/articles/book-reviews", className: "nav-item" },
   { label: "Find a Homeopath", href: "https://findahomeopath.com", className: "nav-item" },
 ];
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const tickerSource = (await getArticles("en")).slice(0, 10);
+  const tickerItems = [...tickerSource, ...tickerSource];
   const structuredData = generateStructuredData({
     type: "WebSite",
     title: "I Love Homeopathy",
@@ -164,6 +167,26 @@ export default function RootLayout({
                 </Container>
               </nav>
             </header>
+
+            <div className="ticker">
+              <Container>
+                <div className="ticker-inner">
+                  <span className="ticker-label">Latest</span>
+                  <div style={{ overflow: "hidden", flex: 1 }}>
+                    <div className="ticker-track">
+                      {tickerItems.map((article, index) => (
+                        <span key={`${article.slug}-${index}`} className="ticker-item">
+                          <a href={getArticleHref("en", article.slug, article.section)}>
+                            {article.title}
+                          </a>{" "}
+                          <span className="ticker-sep">·</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Container>
+            </div>
 
             <main className="main-content">
               <Container>{children}</Container>
