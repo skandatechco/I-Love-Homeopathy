@@ -58,6 +58,7 @@ export const robots = {
 
 const navItems = [
   { label: "Home", href: "/en" },
+  { label: "Find a Homeopath", href: "https://findahomeopath.com" },
   { label: "Remedy of the Day", href: "/en#remedy-of-the-day" },
   { label: "Remedy Quiz", href: "/en#remedy-quiz" },
   { label: "Clinical Cases", href: "/en#clinical-cases" },
@@ -66,7 +67,6 @@ const navItems = [
   { label: "Remedy Resonance", href: "/en#remedy-resonance" },
   { label: "Wellness", href: "/en#wellness" },
   { label: "Book Reviews", href: "/en/articles" },
-  { label: "Find a Homeopath", href: "https://findahomeopath.com" },
 ];
 
 export default function RootLayout({
