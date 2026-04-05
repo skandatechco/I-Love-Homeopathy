@@ -23,16 +23,25 @@ export default async function AdminDashboard() {
 
       <div className="flex flex-wrap gap-4">
         <Link
-          href="/admin/index.html"
+          href="/admin/editor"
           className="inline-flex items-center rounded-xl bg-forest px-5 py-3 font-helvetica text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-midGreen"
         >
-          Open CMS Editor
+          Open Editor
         </Link>
         <Link
-          href="/admin/analytics"
+          href="/admin/editor?tab=review"
+          className="inline-flex items-center rounded-xl bg-gold px-5 py-3 font-helvetica text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-goldLight"
+        >
+          Review Queue
+          <span className="ml-3 rounded-full bg-white/20 px-2 py-0.5 text-xs">
+            {needsReview}
+          </span>
+        </Link>
+        <Link
+          href="/admin/index.html"
           className="inline-flex items-center rounded-xl border border-rule bg-white px-5 py-3 font-helvetica text-sm font-semibold uppercase tracking-[0.12em] text-forest transition hover:bg-creamWarm"
         >
-          View Analytics
+          Open CMS Editor
         </Link>
       </div>
 
@@ -45,11 +54,11 @@ export default async function AdminDashboard() {
             {articles.length.toLocaleString("en-US")}
           </p>
         </div>
-        <div className="rounded-2xl border border-rule bg-white p-6 shadow-sm">
-          <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.16em] text-gold">
+        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-6 shadow-sm">
+          <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700">
             Needs Review
           </p>
-          <p className="mt-3 font-playfair text-4xl text-forest">
+          <p className="mt-3 font-playfair text-4xl text-amber-800">
             {needsReview.toLocaleString("en-US")}
           </p>
         </div>

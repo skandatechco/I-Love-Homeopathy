@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SECTION_COLOURS, type ArticleSection, getSectionColour } from "@/lib/section-colours";
@@ -140,6 +140,7 @@ function parseFrontmatterToState(frontmatter: Record<string, any>, body: string)
 }
 
 export default function GitHubArticleEditor({ mode }: { mode: "edit" | "new" }) {
+  const { signOut } = useClerk();
   const { user } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -402,26 +403,35 @@ export default function GitHubArticleEditor({ mode }: { mode: "edit" | "new" }) 
         </aside>
 
         <section className="flex min-h-0 flex-col border-r border-rule">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-rule px-5 py-4">
-            <div className="flex items-center gap-3 text-sm font-helvetica text-muted">
-              <a href="/admin" className="hover:text-forest">Admin</a>
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-rule bg-forest px-5 py-4 text-white">
+            <div className="flex items-center gap-3 text-sm font-helvetica text-white/80">
+              <a href="/admin" className="hover:text-goldLight">Admin</a>
               <span>›</span>
-              <span className="max-w-[280px] truncate text-forest">{state.title || "New Article"}</span>
+              <span className="max-w-[280px] truncate text-white">{state.title || "New Article"}</span>
             </div>
             <div className="flex items-center gap-3">
+              <span className="text-xs text-white/60">
+                {user?.primaryEmailAddress?.emailAddress}
+              </span>
               <a
                 href={previewHref}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-lg border border-rule px-4 py-2 font-helvetica text-sm text-muted"
+                className="rounded-lg border border-white/20 px-4 py-2 font-helvetica text-sm text-white/80"
               >
                 Preview
               </a>
               <button
                 onClick={handleSave}
-                className="rounded-lg bg-forest px-4 py-2 font-helvetica text-sm text-white"
+                className="rounded-lg bg-gold px-4 py-2 font-helvetica text-sm text-white"
               >
                 Save
+              </button>
+              <button
+                onClick={() => signOut({ redirectUrl: "/admin/login" })}
+                className="rounded-md bg-white/10 px-3 py-1.5 text-xs text-white transition hover:bg-white/20"
+              >
+                Sign out
               </button>
             </div>
           </div>
@@ -620,3 +630,5 @@ export default function GitHubArticleEditor({ mode }: { mode: "edit" | "new" }) 
     </div>
   );
 }
+
+
