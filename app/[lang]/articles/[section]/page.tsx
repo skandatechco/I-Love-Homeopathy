@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Pagination from "@/components/ui/Pagination";
 import { getArticleHref, getArticles, type ArticleSection } from "@/lib/content";
 import { isSupportedLang } from "@/lib/i18n";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
@@ -35,13 +36,21 @@ function articleImage(image?: string | null) {
   return image?.trim() || "";
 }
 
+function safePage(page?: string) {
+  return Math.max(1, Number.parseInt(page ?? "1", 10) || 1);
+}
+
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ lang: string; section: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const { lang: langParam, section } = await params;
+  const { page } = await searchParams;
   const lang = isSupportedLang(langParam) ? langParam : "en";
+  const currentPage = safePage(page);
 
   if (!isArticleSection(section)) {
     return generateSEO({
@@ -52,41 +61,68 @@ export async function generateMetadata({
     });
   }
 
-  return generateSEO({
-    title: SECTION_LABELS[section],
-    description: `Browse ${SECTION_LABELS[section]} articles from the ILH archive.`,
-    url: `/${lang}/articles/${section}`,
-    lang,
-  });
+  return {
+    ...generateSEO({
+      title: `${SECTION_LABELS[section]} — Page ${currentPage} | ILH`,
+      description: `Browse ${SECTION_LABELS[section]} articles from the ILH archive.`,
+      url: `/${lang}/articles/${section}?page=${currentPage}`,
+      lang,
+    }),
+    alternates: {
+      canonical: `/${lang}/articles/${section}?page=${currentPage}`,
+    },
+  };
 }
 
 export default async function ArticleSectionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ lang: string; section: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const { lang: langParam, section } = await params;
+  const { page } = await searchParams;
   const lang = isSupportedLang(langParam) ? langParam : "en";
 
   if (!isArticleSection(section)) notFound();
 
-  const articles = (await getArticles(lang)).filter(
-    (article) => article.section === section
-  );
+  const currentPage = safePage(page);
+  const pageSize = 24;
+  const allArticles = await getArticles(lang);
+  const sectionArticles = allArticles.filter((article) => article.section === section);
+  const totalArticles = sectionArticles.length;
 
-  if (articles.length === 0) notFound();
+  if (totalArticles === 0) notFound();
+
+  const totalPages = Math.ceil(totalArticles / pageSize);
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const start = (safeCurrentPage - 1) * pageSize;
+  const pageArticles = sectionArticles.slice(start, start + pageSize);
+  const from = start + 1;
+  const to = Math.min(safeCurrentPage * pageSize, totalArticles);
+  const colour = getSectionColour(section);
+  const basePath = `/${lang}/articles/${section}`;
 
   const structuredData = generateStructuredData({
     type: "WebSite",
     title: SECTION_LABELS[section],
     description: `${SECTION_LABELS[section]} article collection`,
-    url: `/${lang}/articles/${section}`,
+    url: `${basePath}?page=${safeCurrentPage}`,
   });
-  const colour = getSectionColour(section);
 
   return (
     <>
       <StructuredData data={structuredData} />
+      <head>
+        <link rel="canonical" href={`${basePath}?page=${safeCurrentPage}`} />
+        {safeCurrentPage > 1 ? (
+          <link rel="prev" href={`${basePath}?page=${safeCurrentPage - 1}`} />
+        ) : null}
+        {safeCurrentPage < totalPages ? (
+          <link rel="next" href={`${basePath}?page=${safeCurrentPage + 1}`} />
+        ) : null}
+      </head>
       <article className="mx-auto max-w-7xl space-y-8 pt-24 pb-8">
         <div className="font-helvetica text-sm text-muted">
           <a href={`/${lang}`} className="hover:text-forest">
@@ -112,19 +148,24 @@ export default async function ArticleSectionPage({
           >
             {SECTION_LABELS[section]}
           </h1>
-          <p className="font-georgia text-lg leading-relaxed text-charcoal max-w-3xl">
+          <p className="max-w-3xl font-georgia text-lg leading-relaxed text-charcoal">
             Browse curated archive entries from the {SECTION_LABELS[section]} section.
           </p>
           <p
             className="inline-flex w-fit rounded-full px-3 py-1 font-helvetica text-sm uppercase tracking-wide"
             style={{ background: colour.border, color: "#ffffff" }}
           >
-            {articles.length.toLocaleString("en-US")} articles
+            {totalArticles.toLocaleString("en-US")} articles
           </p>
         </div>
 
+        <p className="font-helvetica text-sm" style={{ color: colour.text }}>
+          Showing {from.toLocaleString("en-US")}–{to.toLocaleString("en-US")} of{" "}
+          {totalArticles.toLocaleString("en-US")} articles
+        </p>
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {articles.map((article) => (
+          {pageArticles.map((article) => (
             <a
               key={article.slug}
               href={getArticleHref(lang, article.slug, article.section)}
@@ -169,6 +210,12 @@ export default async function ArticleSectionPage({
             </a>
           ))}
         </div>
+
+        <Pagination
+          currentPage={safeCurrentPage}
+          totalPages={totalPages}
+          basePath={basePath}
+        />
       </article>
     </>
   );
