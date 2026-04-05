@@ -58,7 +58,6 @@ export const robots = {
 
 const navItems = [
   { label: "Home", href: "/en" },
-  { label: "Find a Homeopath", href: "https://findahomeopath.com" },
   { label: "Remedy of the Day", href: "/en#remedy-of-the-day" },
   { label: "Remedy Quiz", href: "/en#remedy-quiz" },
   { label: "Clinical Cases", href: "/en#clinical-cases" },
@@ -105,6 +104,14 @@ export default function RootLayout({
                   </a>
                   <a href="/en/doctors-corner" className="transition hover:text-goldLight">
                     Doctors&apos; Corner
+                  </a>
+                  <a
+                    href="https://findahomeopath.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="transition hover:text-goldLight"
+                  >
+                    Find a Homeopath
                   </a>
                 </div>
               </div>
