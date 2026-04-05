@@ -2,6 +2,7 @@ import { getArticleHref, getArticles } from "@/lib/content";
 import { isSupportedLang } from "@/lib/i18n";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
+import { getSectionColour } from "@/lib/section-colours";
 
 const ARTICLE_SECTIONS = [
   "remedy-quiz",
@@ -81,8 +82,14 @@ export default async function ArticlesPage({
         <div className="space-y-10">
           {grouped.map((group) => (
             <section key={group.section} className="space-y-5">
-              <div className="space-y-2">
-                <h2 className="font-playfair text-navy text-3xl font-semibold">
+              <div
+                className="space-y-2 rounded-2xl px-4 py-4"
+                style={{ background: getSectionColour(group.section).bg }}
+              >
+                <h2
+                  className="font-playfair text-3xl font-semibold"
+                  style={{ color: getSectionColour(group.section).text }}
+                >
                   {group.title}
                 </h2>
                 <p className="text-sm font-helvetica text-charcoal/70 uppercase tracking-wide">
@@ -97,7 +104,17 @@ export default async function ArticlesPage({
                       key={`${group.section}-${article.slug}`}
                       href={getArticleHref(lang, article.slug, article.section)}
                       className="bg-white rounded-2xl border border-mist p-6 shadow-[0_12px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] transition-all hover:border-navy group"
+                      style={{ borderLeft: `3px solid ${getSectionColour(article.section).border}` }}
                     >
+                      <p
+                        className="mb-3 inline-flex w-fit rounded-full px-2 py-1 font-helvetica text-[11px] font-semibold uppercase tracking-[0.18em]"
+                        style={{
+                          background: getSectionColour(article.section).bg,
+                          color: getSectionColour(article.section).text,
+                        }}
+                      >
+                        {getSectionColour(article.section).label}
+                      </p>
                       <h3 className="font-helvetica text-navy font-semibold text-lg mb-2 group-hover:text-teal transition">
                         {article.title}
                       </h3>

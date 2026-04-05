@@ -15,6 +15,7 @@ import {
 } from "@/lib/content";
 import { markdownToHtml } from "@/lib/mdx-render";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
+import { getSectionColour } from "@/lib/section-colours";
 
 const SECTION_LABELS: Record<string, string> = {
   "book-reviews": "Book Reviews",
@@ -90,10 +91,12 @@ function RelatedArticleCard({
   article: ArticleDoc;
 }) {
   const href = getArticleHref(lang, article.slug, article.section);
+  const colour = getSectionColour(article.section);
   return (
     <a
       href={href}
       className="overflow-hidden rounded-2xl border border-rule bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      style={{ borderLeft: `3px solid ${colour.border}` }}
     >
       {articleImage(article) ? (
         <img
@@ -107,7 +110,10 @@ function RelatedArticleCard({
         </div>
       )}
       <div className="space-y-3 p-5">
-        <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">
+        <p
+          className="inline-flex w-fit rounded-full px-2 py-1 font-helvetica text-[11px] font-semibold uppercase tracking-[0.18em]"
+          style={{ background: colour.bg, color: colour.text }}
+        >
           {SECTION_LABELS[article.section] || "Article"}
         </p>
         <h3 className="font-playfair text-xl font-semibold leading-tight text-ink">
@@ -166,6 +172,7 @@ export default async function SectionArticlePage({
   const breadcrumbSection = SECTION_LABELS[article.section] || article.section;
   const url = getArticleHref(lang, slug, article.section);
   const displayDate = formatDate(article.updated || article.date);
+  const colour = getSectionColour(article.section);
 
   const structuredData = generateStructuredData({
     type: "Article",
@@ -191,6 +198,7 @@ export default async function SectionArticlePage({
           <a
             href={`/${lang}/articles/${article.section}`}
             className="hover:text-forest"
+            style={{ color: colour.text }}
           >
             {breadcrumbSection}
           </a>{" "}
@@ -198,9 +206,22 @@ export default async function SectionArticlePage({
         </div>
 
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1.9fr)_320px]">
-          <article className="rounded-2xl bg-white px-6 py-8 shadow-sm md:px-10 md:py-10">
+          <article
+            className="rounded-2xl bg-white px-6 py-8 shadow-sm md:px-10 md:py-10"
+            style={{ borderTop: `3px solid ${colour.border}` }}
+          >
             <div className="mx-auto max-w-2xl space-y-6">
               <header className="space-y-4">
+                <div
+                  className="inline-flex rounded-r-full px-3 py-1 font-helvetica text-xs font-semibold uppercase tracking-[0.12em]"
+                  style={{
+                    background: colour.bg,
+                    color: colour.text,
+                    borderLeft: `3px solid ${colour.border}`,
+                  }}
+                >
+                  {colour.label}
+                </div>
                 <h1 className="font-playfair text-4xl font-semibold leading-tight text-ink md:text-5xl">
                   {article.title}
                 </h1>
@@ -329,8 +350,18 @@ export default async function SectionArticlePage({
                     key={related.slug}
                     href={getArticleHref(lang, related.slug, related.section)}
                     className="block border-b border-rule pb-4 last:border-b-0 last:pb-0"
+                    style={{
+                      borderLeft: `3px solid ${getSectionColour(related.section).border}`,
+                      paddingLeft: "10px",
+                    }}
                   >
-                    <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">
+                    <p
+                      className="inline-flex w-fit rounded-full px-2 py-1 font-helvetica text-[11px] font-semibold uppercase tracking-[0.18em]"
+                      style={{
+                        background: getSectionColour(related.section).bg,
+                        color: getSectionColour(related.section).text,
+                      }}
+                    >
                       {SECTION_LABELS[related.section] || "Article"}
                     </p>
                     <h4 className="mt-2 font-playfair text-lg font-semibold leading-tight text-ink">

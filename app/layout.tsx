@@ -7,6 +7,7 @@ import ClarityScript from "@/components/analytics/ClarityScript";
 import GA4Provider from "@/components/analytics/GA4Provider";
 import PlausibleScript from "@/components/analytics/PlausibleScript";
 import PostHogProvider from "@/components/analytics/PostHogProvider";
+import TopSectionNav from "@/components/navigation/TopSectionNav";
 import StructuredData from "@/components/seo/StructuredData";
 import { getArticleHref, getArticles } from "@/lib/content";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
@@ -59,14 +60,14 @@ export const robots = {
 
 const navItems = [
   { label: "Home", href: "/en", className: "nav-item nav-home active" },
-  { label: "Remedy of the Day", href: "/en/articles/remedy-of-the-day", className: "nav-item" },
-  { label: "Remedy Quiz", href: "/en/articles/remedy-quiz", className: "nav-item" },
-  { label: "Clinical Cases", href: "/en/articles/clinical-cases", className: "nav-item" },
-  { label: "Philosophy", href: "/en/articles/philosophy", className: "nav-item" },
-  { label: "History", href: "/en/articles/history", className: "nav-item" },
-  { label: "Remedy Resonance", href: "/en/articles/remedy-resonance", className: "nav-item" },
-  { label: "Wellness", href: "/en/articles/wellness", className: "nav-item" },
-  { label: "Book Reviews", href: "/en/articles/book-reviews", className: "nav-item" },
+  { label: "Remedy of the Day", href: "/en/articles/remedy-of-the-day", className: "nav-item", section: "remedy-of-the-day" },
+  { label: "Remedy Quiz", href: "/en/articles/remedy-quiz", className: "nav-item", section: "remedy-quiz" },
+  { label: "Clinical Cases", href: "/en/articles/clinical-cases", className: "nav-item", section: "clinical-cases" },
+  { label: "Philosophy", href: "/en/articles/philosophy", className: "nav-item", section: "philosophy" },
+  { label: "History", href: "/en/articles/history", className: "nav-item", section: "history" },
+  { label: "Remedy Resonance", href: "/en/articles/remedy-resonance", className: "nav-item", section: "remedy-resonance" },
+  { label: "Wellness", href: "/en/articles/wellness", className: "nav-item", section: "wellness" },
+  { label: "Book Reviews", href: "/en/articles/book-reviews", className: "nav-item", section: "book-reviews" },
   { label: "Find a Homeopath", href: "https://findahomeopath.com", className: "nav-item" },
 ];
 
@@ -151,19 +152,7 @@ export default async function RootLayout({
 
               <nav className="primary-nav">
                 <Container>
-                  <div className="nav-inner">
-                    {navItems.map((item) => (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        target={item.href.startsWith("http") ? "_blank" : undefined}
-                        rel={item.href.startsWith("http") ? "noreferrer" : undefined}
-                        className={item.className}
-                      >
-                        {item.label}
-                      </a>
-                    ))}
-                  </div>
+                  <TopSectionNav items={navItems} />
                 </Container>
               </nav>
             </header>

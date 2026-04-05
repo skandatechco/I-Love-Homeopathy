@@ -3,6 +3,7 @@ import { getArticleHref, getArticles, type ArticleSection } from "@/lib/content"
 import { isSupportedLang } from "@/lib/i18n";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
+import { getSectionColour } from "@/lib/section-colours";
 
 const SECTION_LABELS: Record<ArticleSection, string> = {
   "remedy-quiz": "Remedy Quiz",
@@ -81,6 +82,7 @@ export default async function ArticleSectionPage({
     description: `${SECTION_LABELS[section]} article collection`,
     url: `/${lang}/articles/${section}`,
   });
+  const colour = getSectionColour(section);
 
   return (
     <>
@@ -97,14 +99,26 @@ export default async function ArticleSectionPage({
           &gt; <span className="text-ink">{SECTION_LABELS[section]}</span>
         </div>
 
-        <div className="space-y-3">
-          <h1 className="font-playfair text-4xl font-semibold leading-tight text-navy md:text-5xl">
+        <div
+          className="space-y-3 rounded-2xl px-6 py-6"
+          style={{
+            background: colour.bg,
+            borderBottom: `3px solid ${colour.border}`,
+          }}
+        >
+          <h1
+            className="font-playfair text-4xl font-semibold leading-tight md:text-5xl"
+            style={{ color: colour.text }}
+          >
             {SECTION_LABELS[section]}
           </h1>
           <p className="font-georgia text-lg leading-relaxed text-charcoal max-w-3xl">
             Browse curated archive entries from the {SECTION_LABELS[section]} section.
           </p>
-          <p className="font-helvetica text-sm uppercase tracking-wide text-charcoal/70">
+          <p
+            className="inline-flex w-fit rounded-full px-3 py-1 font-helvetica text-sm uppercase tracking-wide"
+            style={{ background: colour.border, color: "#ffffff" }}
+          >
             {articles.length.toLocaleString("en-US")} articles
           </p>
         </div>
@@ -115,6 +129,7 @@ export default async function ArticleSectionPage({
               key={article.slug}
               href={getArticleHref(lang, article.slug, article.section)}
               className="group overflow-hidden rounded-2xl border border-mist bg-white shadow-[0_12px_24px_rgba(0,0,0,0.03)] transition-all hover:-translate-y-0.5 hover:border-navy hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)]"
+              style={{ borderLeft: `3px solid ${getSectionColour(article.section).border}` }}
             >
               {articleImage(article.image) ? (
                 <img
@@ -129,7 +144,13 @@ export default async function ArticleSectionPage({
               )}
 
               <div className="space-y-3 p-5">
-                <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">
+                <p
+                  className="inline-flex w-fit rounded-full px-2 py-1 font-helvetica text-[11px] font-semibold uppercase tracking-[0.18em]"
+                  style={{
+                    background: getSectionColour(article.section).bg,
+                    color: getSectionColour(article.section).text,
+                  }}
+                >
                   {SECTION_LABELS[section]}
                 </p>
                 <h2 className="font-playfair text-2xl font-semibold leading-tight text-navy transition group-hover:text-teal">
