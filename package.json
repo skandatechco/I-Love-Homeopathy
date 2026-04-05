@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.0.8",
     "@next/mdx": "^16.2.2",
     "@tailwindcss/typography": "^0.5.15",
     "@tinacms/cli": "^1.11.0",
