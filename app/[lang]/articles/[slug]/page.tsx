@@ -1,6 +1,6 @@
-import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import { getArticleBySlug, getArticleHref } from "@/lib/content";
+import { markdownToHtml } from "@/lib/mdx-render";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 import StructuredData from "@/components/seo/StructuredData";
 import MedicalDisclaimer from "@/components/compliance/MedicalDisclaimer";
@@ -41,6 +41,7 @@ export default async function ArticlePage({
   const article = await getArticleBySlug(lang, slug);
   if (!article) notFound();
   const url = getArticleHref(lang, slug);
+  const html = await markdownToHtml(article.body ?? "");
 
   const structuredData = generateStructuredData({
     type: "Article",
@@ -78,7 +79,7 @@ export default async function ArticlePage({
         />
 
         <section className="prose prose-lg max-w-none">
-          <MDXRemote source={article.body} />
+          <div dangerouslySetInnerHTML={{ __html: html }} />
         </section>
 
         <ReviewerAttribution reviewer={article.reviewer} />
