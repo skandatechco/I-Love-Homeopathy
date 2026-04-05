@@ -152,14 +152,11 @@ export default async function HomePage({
                 <span className="ticker-label">Latest</span>
                 <div style={{ overflow: "hidden", flex: 1 }}>
                   <div className="ticker-track ticker-track-scroll">
-                    {tickerItems.map((article, index) => (
-                      <span key={`${article.slug}-${index}`} className="ticker-item">
-                        <a href={storyHref(contentLang, article)}>
-                          {displayTitle(article)}
-                        </a>
-                        <span className="ticker-sep">·</span>
-                      </span>
-                    ))}
+                  {tickerItems.map((article, index) => (
+                    <span key={`${article.slug}-${index}`} className="ticker-item">
+                      {displayTitle(article)} <span className="ticker-sep">·</span>
+                    </span>
+                  ))}
                   </div>
                 </div>
               </div>
