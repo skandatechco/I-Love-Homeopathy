@@ -147,15 +147,18 @@ export default async function HomePage({
       <StructuredData data={structuredData} />
       <div className="homepage-reference">
         <div className="ticker">
-          <div className="ticker-inner">
-            <span className="ticker-label">Latest</span>
-            <div style={{ overflow: "hidden", flex: 1 }}>
-              <div className="ticker-track ticker-track-scroll">
-                {tickerItems.map((article, index) => (
-                  <a key={`${article.slug}-${index}`} className="ticker-item" href={storyHref(contentLang, article)}>
-                    {displayTitle(article)} <span className="ticker-sep">·</span>
-                  </a>
-                ))}
+          <div className="mx-auto max-w-[1200px] px-5">
+            <div className="ticker-inner">
+              <span className="ticker-label">Latest</span>
+              <div style={{ overflow: "hidden", flex: 1 }}>
+                <div className="ticker-track ticker-track-scroll">
+                  {tickerItems.map((article, index) => (
+                    <span key={`${article.slug}-${index}`} className="ticker-item">
+                      <a href={storyHref(contentLang, article)}>{displayTitle(article)}</a>{" "}
+                      <span className="ticker-sep">·</span>
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
