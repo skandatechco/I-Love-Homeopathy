@@ -171,14 +171,14 @@ export default function RootLayout({
 
               <nav className="sticky top-0 z-40 bg-forest">
                 <div className="mx-auto max-w-7xl px-0 md:px-12">
-                  <div className="flex h-11 overflow-x-auto whitespace-nowrap scrollbar-hide">
+                  <div className="flex h-11 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:overflow-visible">
                     {navItems.map((item, index) => (
                       <a
                         key={item.label}
                         href={item.href}
                         target={item.href.startsWith("http") ? "_blank" : undefined}
                         rel={item.href.startsWith("http") ? "noreferrer" : undefined}
-                        className={`flex items-center border-r border-white/10 px-[18px] font-helvetica text-[12px] font-semibold uppercase tracking-[0.07em] transition ${
+                        className={`flex shrink-0 items-center border-r border-white/10 px-[18px] font-helvetica text-[12px] font-semibold uppercase tracking-[0.07em] transition md:flex-1 md:justify-center md:px-3 md:text-[11px] ${
                           index === 0
                             ? "bg-gold font-bold text-forest"
                             : "text-white/80 hover:bg-white/5 hover:text-goldLight"
