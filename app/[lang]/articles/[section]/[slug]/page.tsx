@@ -1,7 +1,7 @@
-﻿import { MDXRemote } from "next-mdx-remote/rsc";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import {
-  getArticleBySectionAndSlug,
+  getArticleBySlug,
   getArticleHref,
 } from "@/lib/content";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
@@ -17,22 +17,26 @@ export async function generateMetadata({
 }: {
   params: Promise<{ lang: string; section: string; slug: string }>;
 }) {
-  const { lang, section, slug } = await params;
-  const article = await getArticleBySectionAndSlug(lang, section, slug);
-  if (!article) notFound();
-  const url = getArticleHref(lang, slug, section);
+  try {
+    const { lang, slug } = await params;
+    const article = await getArticleBySlug(lang, slug);
+    if (!article) notFound();
+    const url = getArticleHref(lang, slug, article.section);
 
-  return generateSEO({
-    title: article.title,
-    description: article.excerpt,
-    url,
-    type: "article",
-    publishedTime: article.date,
-    modifiedTime: article.updated,
-    author: article.reviewer || article.author,
-    tags: article.tags,
-    lang,
-  });
+    return generateSEO({
+      title: article.title,
+      description: article.excerpt,
+      url,
+      type: "article",
+      publishedTime: article.date,
+      modifiedTime: article.updated,
+      author: article.reviewer || article.author,
+      tags: article.tags,
+      lang,
+    });
+  } catch {
+    notFound();
+  }
 }
 
 export default async function SectionArticlePage({
@@ -40,58 +44,75 @@ export default async function SectionArticlePage({
 }: {
   params: Promise<{ lang: string; section: string; slug: string }>;
 }) {
-  const { lang, section, slug } = await params;
-  const article = await getArticleBySectionAndSlug(lang, section, slug);
-  if (!article) notFound();
-  const url = getArticleHref(lang, slug, section);
+  try {
+    const { lang, section, slug } = await params;
+    const article = await getArticleBySlug(lang, slug);
 
-  const structuredData = generateStructuredData({
-    type: "Article",
-    title: article.title,
-    description: article.excerpt,
-    url,
-    author: article.reviewer || article.author,
-    publishedTime: article.date,
-    modifiedTime: article.updated,
-    tags: article.tags,
-  });
+    console.log("[article-detail] params", { lang, section, slug });
+    console.log(
+      "[article-detail] getArticleBySlug result",
+      article
+        ? { slug: article.slug, section: article.section, title: article.title }
+        : null
+    );
 
-  return (
-    <>
-      <StructuredData data={structuredData} />
-      <article className="max-w-4xl mx-auto pt-24 pb-8 space-y-6">
-        <h1 className="font-playfair text-navy text-4xl md:text-5xl font-semibold leading-tight">
-          {article.title}
-        </h1>
+    if (!article) notFound();
 
-        {article.excerpt && (
-          <p className="font-georgia text-charcoal text-lg leading-relaxed">{article.excerpt}</p>
-        )}
+    const url = getArticleHref(lang, slug, article.section);
 
-        <div className="text-[11px] text-sage">
-          {article.date ? <>Updated {article.updated || article.date}</> : null}
-        </div>
+    const structuredData = generateStructuredData({
+      type: "Article",
+      title: article.title,
+      description: article.excerpt,
+      url,
+      author: article.reviewer || article.author,
+      publishedTime: article.date,
+      modifiedTime: article.updated,
+      tags: article.tags,
+    });
 
-        <UrgentCareWarning
-          redFlags={[
-            "Severe symptoms should be assessed by a qualified clinician",
-            "Breathing difficulty, chest pain, or neurological symptoms need urgent care",
-            "Do not delay emergency treatment while reading educational content",
-          ]}
-        />
+    return (
+      <>
+        <StructuredData data={structuredData} />
+        <article className="max-w-4xl mx-auto pt-24 pb-8 space-y-6">
+          <h1 className="font-playfair text-navy text-4xl md:text-5xl font-semibold leading-tight">
+            {article.title}
+          </h1>
 
-        <section className="prose prose-lg max-w-none">
-          <MDXRemote source={article.body} />
-        </section>
+          {article.excerpt && (
+            <p className="font-georgia text-charcoal text-lg leading-relaxed">
+              {article.excerpt}
+            </p>
+          )}
 
-        <ReviewerAttribution reviewer={article.reviewer} />
-        <MedicalDisclaimer />
+          <div className="text-[11px] text-sage">
+            {article.date ? <>Updated {article.updated || article.date}</> : null}
+          </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <ConsultBaholaCTA />
-          <RemedyForCTA />
-        </div>
-      </article>
-    </>
-  );
+          <UrgentCareWarning
+            redFlags={[
+              "Severe symptoms should be assessed by a qualified clinician",
+              "Breathing difficulty, chest pain, or neurological symptoms need urgent care",
+              "Do not delay emergency treatment while reading educational content",
+            ]}
+          />
+
+          <section className="prose prose-lg max-w-none">
+            <MDXRemote source={article.body} />
+          </section>
+
+          <ReviewerAttribution reviewer={article.reviewer} />
+          <MedicalDisclaimer />
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <ConsultBaholaCTA />
+            <RemedyForCTA />
+          </div>
+        </article>
+      </>
+    );
+  } catch (error) {
+    console.error("[article-detail] render error", error);
+    notFound();
+  }
 }
