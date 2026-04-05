@@ -1,6 +1,4 @@
-import EmailSignup from "@/components/marketing/EmailSignup";
-import StructuredData from "@/components/seo/StructuredData";
-import { Card } from "@/components/ui/Card";
+﻿import StructuredData from "@/components/seo/StructuredData";
 import {
   type ArticleDoc,
   getArticleHref,
@@ -9,56 +7,39 @@ import {
 import { isSupportedLang } from "@/lib/i18n";
 import { generateSEO, generateStructuredData } from "@/lib/seo";
 
-const SECTION_LABELS: Record<string, string> = {
-  "book-reviews": "Book Reviews",
-  "clinical-cases": "Clinical Cases",
-  history: "History of Homeopathy",
-  philosophy: "Philosophy of Homeopathy",
-  "remedy-of-the-day": "Remedy of the Day",
-  "remedy-quiz": "Materia Medica Quiz",
-  "remedy-resonance": "Remedy Resonance",
-  wellness: "Living Well",
-};
-
-function cleanText(value?: string | null, fallback = "Explore the editorial archive.") {
+function cleanText(value?: string | null, fallback = "") {
   if (!value) return fallback;
-  const compact = value.replace(/\s+/g, " ").trim();
-  return compact || fallback;
+  return value.replace(/\s+/g, " ").trim() || fallback;
 }
 
-function displayTitle(article: ArticleDoc) {
-  const title = cleanText(article.title, "");
+function displayTitle(article?: ArticleDoc | null, fallback = "Untitled feature") {
+  if (!article) return fallback;
+  const title = cleanText(article.title);
   if (title) return title;
-
-  const excerpt = cleanText(article.excerpt, "");
-  if (!excerpt) return "Untitled feature";
-
+  const excerpt = cleanText(article.excerpt);
+  if (!excerpt) return fallback;
   return excerpt.length > 72 ? `${excerpt.slice(0, 69)}...` : excerpt;
 }
 
-function displayExcerpt(article: ArticleDoc, fallback: string) {
-  const excerpt = cleanText(article.excerpt, "");
-  if (excerpt) {
-    return excerpt.length > 180 ? `${excerpt.slice(0, 177)}...` : excerpt;
-  }
-
-  return fallback;
+function displayExcerpt(article?: ArticleDoc | null, fallback = "Read more from the ILH editorial archive.") {
+  if (!article) return fallback;
+  const excerpt = cleanText(article.excerpt);
+  if (!excerpt) return fallback;
+  return excerpt.length > 220 ? `${excerpt.slice(0, 217)}...` : excerpt;
 }
 
-function storyHref(lang: string, article: ArticleDoc) {
+function storyHref(lang: string, article?: ArticleDoc | null) {
+  if (!article) return `/${lang}/articles`;
   return getArticleHref(lang, article.slug, article.section);
 }
 
-function storyDate(article: ArticleDoc) {
-  const source = article.updated || article.date;
-  if (!source) return null;
-
-  const date = new Date(source);
-  if (Number.isNaN(date.valueOf())) return source;
-
+function storyDate(article?: ArticleDoc | null) {
+  if (!article?.date) return "Archive";
+  const date = new Date(article.updated || article.date);
+  if (Number.isNaN(date.valueOf())) return article.updated || article.date;
   return new Intl.DateTimeFormat("en", {
     day: "numeric",
-    month: "short",
+    month: "long",
     year: "numeric",
   }).format(date);
 }
@@ -70,79 +51,41 @@ function pickStories(
   excluded = new Set<string>()
 ) {
   const selected: ArticleDoc[] = [];
-
   for (const article of articles) {
     if (selected.length >= count) break;
     if (excluded.has(article.slug)) continue;
     if (!predicate(article)) continue;
-    if (!cleanText(article.title, "") && !cleanText(article.excerpt, "")) continue;
-
     selected.push(article);
     excluded.add(article.slug);
   }
-
   return selected;
 }
 
-function Kicker({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="font-helvetica text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">
-      {children}
-    </p>
-  );
-}
-
-function SectionHeading({
-  id,
+function PlaceholderGraphic({
+  background,
   title,
-  intro,
+  subtitle,
 }: {
-  id: string;
+  background: string;
   title: string;
-  intro: string;
+  subtitle?: string;
 }) {
   return (
-    <div id={id} className="border-b-4 border-forest pb-4">
-      <h2 className="font-playfair text-3xl font-semibold text-forest md:text-4xl">
-        {title}
-      </h2>
-      <p className="mt-3 max-w-3xl font-georgia text-lg leading-8 text-muted">
-        {intro}
-      </p>
+    <div
+      className="flex h-full w-full items-center justify-center"
+      style={{ background }}
+    >
+      <div className="px-6 text-center text-white/80">
+        <div className="font-playfair text-3xl font-semibold tracking-wide text-goldLight/70">
+          {title}
+        </div>
+        {subtitle ? (
+          <div className="mt-2 font-georgia text-xs uppercase tracking-[0.28em] text-white/40">
+            {subtitle}
+          </div>
+        ) : null}
+      </div>
     </div>
-  );
-}
-
-function StoryList({
-  contentLang,
-  stories,
-}: {
-  contentLang: string;
-  stories: ArticleDoc[];
-}) {
-  return (
-    <Card className="h-full overflow-hidden border-rule bg-white p-0 shadow-card">
-      {stories.map((story, index) => (
-        <a
-          key={story.slug}
-          href={storyHref(contentLang, story)}
-          className={`group block px-6 py-5 transition hover:bg-creamWarm/50 ${
-            index < stories.length - 1 ? "border-b border-rule" : ""
-          }`}
-        >
-          <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
-          <h3 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-forest transition group-hover:text-midGreen">
-            {displayTitle(story)}
-          </h3>
-          <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
-            {displayExcerpt(story, "Read the full feature from the ILH editorial archive.")}
-          </p>
-          <p className="mt-4 font-helvetica text-xs uppercase tracking-[0.2em] text-muted/80">
-            {storyDate(story) || "Archive"}
-          </p>
-        </a>
-      ))}
-    </Card>
   );
 }
 
@@ -157,7 +100,7 @@ export async function generateMetadata({
   return generateSEO({
     title: "The World's Journal of Classical Medicine",
     description:
-      "Browse ILH's editorial front page for homeopathy philosophy, clinical cases, remedy resonance, wellness writing, and BHMS-reviewed educational features.",
+      "Magazine-style editorial front page for remedy studies, clinical cases, philosophy, history, and wellness.",
     url: `/${lang}`,
     lang,
   });
@@ -173,366 +116,302 @@ export default async function HomePage({
 
   const localizedArticles = await getArticles(lang);
   const contentLang = localizedArticles.length > 0 ? lang : "en";
-  const articles =
-    localizedArticles.length > 0 ? localizedArticles : await getArticles("en");
-  const tickerItems = articles.slice(0, 8);
-  const loopingTickerItems = [...tickerItems, ...tickerItems];
+  const articles = localizedArticles.length > 0 ? localizedArticles : await getArticles("en");
 
-  const usedSlugs = new Set<string>();
-  const featuredStory =
-    articles.find(
-      (article) =>
-        article.slug === "dynamic-medicine-the-world-according-to-homeopathy"
-    ) ||
-    articles.find((article) => article.slug === "understanding-homeopathy") ||
-    articles.find((article) => cleanText(article.title, "") !== "") ||
-    articles[0];
+  const used = new Set<string>();
+  const featured =
+    articles.find((article) => article.slug === "dynamic-medicine-the-world-according-to-homeopathy") ||
+    articles.find((article) => cleanText(article.title)) ||
+    null;
+  if (featured) used.add(featured.slug);
 
-  if (featuredStory) {
-    usedSlugs.add(featuredStory.slug);
-  }
-
-  const heroCompanions = pickStories(
-    articles,
-    3,
-    (article) =>
-      article.section === "philosophy" || article.section === "book-reviews",
-    usedSlugs
-  );
-
-  const remedyOfDay = pickStories(
-    articles,
-    1,
-    (article) => article.section === "remedy-of-the-day",
-    usedSlugs
-  )[0];
-
-  const quizFeature = pickStories(
-    articles,
-    1,
-    (article) => article.section === "remedy-quiz",
-    usedSlugs
-  )[0];
-
-  const editorialDigest = pickStories(articles, 4, () => true, usedSlugs);
-  const clinicalCases = pickStories(
-    articles,
-    3,
-    (article) => article.section === "clinical-cases"
-  );
-  const philosophyStories = pickStories(
-    articles,
-    3,
-    (article) => article.section === "philosophy"
-  );
-  const historyFeature = pickStories(
-    articles,
-    1,
-    (article) => article.section === "history"
-  )[0];
-  const resonanceStories = pickStories(
-    articles,
-    4,
-    (article) => article.section === "remedy-resonance"
-  );
-  const wellnessStories = pickStories(
-    articles,
-    3,
-    (article) => article.section === "wellness"
-  );
+  const remedyOfDay = pickStories(articles, 1, (article) => article.section === "remedy-of-the-day", used)[0] || null;
+  const sidebarStories = pickStories(articles, 3, () => true, used);
+  const clinicalCases = pickStories(articles, 4, (article) => article.section === "clinical-cases");
+  const quizFeature = pickStories(articles, 1, (article) => article.section === "remedy-quiz")[0] || null;
+  const philosophy = pickStories(articles, 3, (article) => article.section === "philosophy");
+  const history = pickStories(articles, 4, (article) => article.section === "history");
+  const resonance = pickStories(articles, 4, (article) => article.section === "remedy-resonance");
+  const wellness = pickStories(articles, 3, (article) => article.section === "wellness");
+  const tickerItems = [...articles.slice(0, 5), ...articles.slice(0, 5)];
 
   const structuredData = generateStructuredData({
     type: "WebSite",
     title: "I Love Homeopathy",
-    description:
-      "Magazine-style front page for ILH's philosophy, clinical cases, remedy resonance, and wellness archive.",
+    description: "Magazine-style homepage for ILH's editorial archive.",
     url: `/${lang}`,
   });
 
   return (
     <>
       <StructuredData data={structuredData} />
-
-      <div className="space-y-12 bg-cream pb-12 pt-8 md:space-y-16">
-        <section className="border-y border-rule bg-creamWarm py-2">
-          <div className="flex items-center gap-4 overflow-hidden">
-            <span className="shrink-0 bg-gold px-3 py-1 font-helvetica text-[10px] font-bold uppercase tracking-[0.2em] text-white">
-              Latest
-            </span>
-            <div className="min-w-0 flex-1 overflow-hidden">
-              <div className="ticker-track-scroll flex items-center gap-8 whitespace-nowrap font-helvetica text-sm text-ink">
-                {loopingTickerItems.map((article, index) => (
-                  <a
-                    key={`${article.slug}-${index}`}
-                    href={storyHref(contentLang, article)}
-                    className="transition hover:text-midGreen"
-                  >
-                    {displayTitle(article)}
-                    <span className="ml-8 text-rule">·</span>
+      <div className="homepage-reference">
+        <div className="ticker">
+          <div className="ticker-inner">
+            <span className="ticker-label">Latest</span>
+            <div style={{ overflow: "hidden", flex: 1 }}>
+              <div className="ticker-track ticker-track-scroll">
+                {tickerItems.map((article, index) => (
+                  <a key={`${article.slug}-${index}`} className="ticker-item" href={storyHref(contentLang, article)}>
+                    {displayTitle(article)} <span className="ticker-sep">·</span>
                   </a>
                 ))}
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        {contentLang !== lang && (
-          <section className="rounded-2xl border border-gold/30 bg-gold/10 px-5 py-4 font-helvetica text-sm leading-6 text-ink">
-            Showing the English editorial archive while translated homepage content
-            is prepared for this edition.
-          </section>
-        )}
-
-        {featuredStory && (
-          <section className="grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_340px]">
-            <div className="space-y-6">
-              <div className="border-b-4 border-forest pb-5">
-                <Kicker>{SECTION_LABELS[featuredStory.section] || "Lead Story"}</Kicker>
-                <h1 className="mt-4 max-w-5xl font-playfair text-4xl font-semibold leading-tight text-forest md:text-6xl">
-                  {displayTitle(featuredStory)}
-                </h1>
-                <p className="mt-5 max-w-3xl font-georgia text-xl leading-8 text-muted">
-                  {displayExcerpt(
-                    featuredStory,
-                    "Read the lead feature from the ILH editorial archive."
-                  )}
-                </p>
-                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-helvetica text-xs uppercase tracking-[0.18em] text-muted">
-                  <span>{storyDate(featuredStory) || "Editorial Archive"}</span>
-                  {featuredStory.readTime ? (
-                    <span>{featuredStory.readTime} min read</span>
-                  ) : null}
-                </div>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <a
-                    href={storyHref(contentLang, featuredStory)}
-                    className="inline-flex items-center justify-center bg-forest px-5 py-3 font-helvetica text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-midGreen"
-                  >
-                    Read the lead story
-                  </a>
-                  <a
-                    href={`/${contentLang}/articles`}
-                    className="inline-flex items-center justify-center border border-forest px-5 py-3 font-helvetica text-sm font-semibold uppercase tracking-[0.12em] text-forest transition hover:bg-forest hover:text-white"
-                  >
-                    Browse the archive
-                  </a>
-                </div>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-3">
-                {heroCompanions.map((story) => (
-                  <Card key={story.slug} className="border-rule bg-white">
-                    <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
-                    <h2 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-forest">
-                      {displayTitle(story)}
-                    </h2>
-                    <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
-                      {displayExcerpt(
-                        story,
-                        "Open this companion feature from the editorial front page."
-                      )}
-                    </p>
-                    <a
-                      href={storyHref(contentLang, story)}
-                      className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
-                    >
-                      Continue reading
-                    </a>
-                  </Card>
-                ))}
+        <div className="hero-section">
+          <div className="hero-primary">
+            <div className="hero-img-wrap">
+              <PlaceholderGraphic background="#0d3d4f" title="Lachesis" subtitle="Materia Medica" />
+              <div className="hero-overlay">
+                <span className="hero-kicker">{featured?.section?.replace(/-/g, " ")} · Materia Medica</span>
+                <h1 className="hero-title">{displayTitle(featured, "Dynamic Medicine: Why Homeopathy Changes the Very Nature of Healing Itself")}</h1>
+                <p className="hero-deck">{displayExcerpt(featured, "A body, heart, mind, and soul approach to medicine — how homeopathy's energetic paradigm is rewriting what it means to cure a patient, not merely suppress symptoms.")}</p>
               </div>
             </div>
-
-            <aside className="space-y-6">
-              {remedyOfDay ? (
-                <div id="remedy-of-the-day">
-                  <Card className="border-forest bg-forest text-white shadow-card">
-                    <Kicker>Remedy of the Day</Kicker>
-                    <h2 className="mt-3 font-playfair text-3xl font-semibold leading-tight text-white">
-                      {displayTitle(remedyOfDay)}
-                    </h2>
-                    <p className="mt-3 font-helvetica text-sm leading-6 text-white/80">
-                      {displayExcerpt(
-                        remedyOfDay,
-                        "Read today's remedy feature from the ILH archive."
-                      )}
-                    </p>
-                    <a
-                      href={storyHref(contentLang, remedyOfDay)}
-                      className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-goldLight transition hover:text-white"
-                    >
-                      Open remedy feature
-                    </a>
-                  </Card>
-                </div>
-              ) : null}
-
-              <Card className="overflow-hidden border-rule bg-white p-0">
-                <div className="border-b border-rule px-6 py-4">
-                  <Kicker>From the archive</Kicker>
-                </div>
-                <div className="divide-y divide-rule">
-                  {editorialDigest.map((story) => (
-                    <a
-                      key={story.slug}
-                      href={storyHref(contentLang, story)}
-                      className="group block px-6 py-4 transition hover:bg-creamWarm/50"
-                    >
-                      <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
-                      <h3 className="mt-2 font-playfair text-xl font-semibold leading-tight text-forest transition group-hover:text-midGreen">
-                        {displayTitle(story)}
-                      </h3>
-                    </a>
-                  ))}
-                </div>
-              </Card>
-
-              {quizFeature ? (
-                <div id="remedy-quiz">
-                  <Card className="border-rule bg-white">
-                    <Kicker>Test your materia medica</Kicker>
-                    <h2 className="mt-3 font-playfair text-2xl font-semibold text-forest">
-                      {displayTitle(quizFeature)}
-                    </h2>
-                    <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
-                      {displayExcerpt(
-                        quizFeature,
-                        "Challenge yourself with a remedy quiz from the editorial archive."
-                      )}
-                    </p>
-                    <a
-                      href={storyHref(contentLang, quizFeature)}
-                      className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
-                    >
-                      Take the challenge
-                    </a>
-                  </Card>
-                </div>
-              ) : null}
-
-              <div id="newsletter">
-                <EmailSignup />
-              </div>
-            </aside>
-          </section>
-        )}
-
-        <section className="grid gap-8 lg:grid-cols-2">
-          <div id="clinical-cases" className="space-y-6">
-            <SectionHeading
-              id="clinical-cases-heading"
-              title="Clinical Cases"
-              intro="Practice stories, observations, and case-led learning from the ILH archive."
-            />
-            <StoryList contentLang={contentLang} stories={clinicalCases} />
+            <div className="hero-byline">
+              <span>By {cleanText(featured?.author, "ILH Editorial")}</span>
+              <span className="dot">·</span>
+              <span>{storyDate(featured)}</span>
+              <span className="dot">·</span>
+              <span>{featured?.section?.replace(/-/g, " ") || "Philosophy"}</span>
+              <span className="dot">·</span>
+              <span style={{ color: "#1a5c6e", fontWeight: 600 }}>
+                <a href={storyHref(contentLang, featured)}>Read more ?</a>
+              </span>
+            </div>
           </div>
 
-          <div id="philosophy" className="space-y-6">
-            <SectionHeading
-              id="philosophy-heading"
-              title="Philosophy of Homeopathy"
-              intro="Core principles, Organon thinking, and modern interpretive essays."
-            />
-            <StoryList contentLang={contentLang} stories={philosophyStories} />
-          </div>
-        </section>
+          <div className="hero-sidebar">
+            <div className="sidebar-section-head">
+              <h3>Remedy of the Day</h3>
+            </div>
+            <div className="remedy-day-card" id="remedy-of-the-day">
+              <span className="remedy-badge">{storyDate(remedyOfDay)}</span>
+              <div className="remedy-name">{displayTitle(remedyOfDay, "Causticum")}</div>
+              <div className="remedy-latin">{cleanText(remedyOfDay?.author, "Causticum Hahnemanni")}</div>
+              <div className="remedy-keynote">{displayExcerpt(remedyOfDay, '"The remedy for chronic ailments that come on slowly, with progressive weakness and paralysis."')}</div>
+              <a className="remedy-link" href={storyHref(contentLang, remedyOfDay)}>Explore full materia medica ?</a>
+            </div>
 
-        <section className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.9fr)]">
-          <div id="history" className="space-y-6">
-            <SectionHeading
-              id="history-heading"
-              title="History of Homeopathy"
-              intro="People, institutions, and moments that shaped the tradition and practice of classical medicine."
-            />
-            <Card className="border-rule bg-white shadow-card">
-              {historyFeature ? (
-                <>
-                  <Kicker>Archive focus</Kicker>
-                  <h3 className="mt-3 font-playfair text-3xl font-semibold leading-tight text-forest">
-                    {displayTitle(historyFeature)}
-                  </h3>
-                  <p className="mt-3 font-georgia text-base leading-7 text-muted">
-                    {displayExcerpt(
-                      historyFeature,
-                      "Discover one of the defining stories in the history of homeopathy."
-                    )}
-                  </p>
-                  <a
-                    href={storyHref(contentLang, historyFeature)}
-                    className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
-                  >
-                    Read the history feature
-                  </a>
-                </>
-              ) : (
-                <p className="font-helvetica text-sm leading-6 text-muted">
-                  History features will appear here as the archive is curated.
-                </p>
-              )}
-            </Card>
-          </div>
-
-          <div id="remedy-resonance" className="space-y-6">
-            <SectionHeading
-              id="remedy-resonance-heading"
-              title="Remedy Resonance"
-              intro="Practical remedy stories, keynote differentials, and field notes from the archive."
-            />
-            <div className="grid gap-6 md:grid-cols-2">
-              {resonanceStories.map((story) => (
-                <Card key={story.slug} className="border-rule bg-white shadow-card">
-                  <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
-                  <h3 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-forest">
-                    {displayTitle(story)}
-                  </h3>
-                  <p className="mt-3 font-helvetica text-sm leading-6 text-muted">
-                    {displayExcerpt(
-                      story,
-                      "Explore a remedy resonance feature from the archive."
-                    )}
-                  </p>
-                  <a
-                    href={storyHref(contentLang, story)}
-                    className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
-                  >
-                    Explore the guide
-                  </a>
-                </Card>
+            <div className="sidebar-section-head" style={{ marginTop: 8 }}>
+              <h3>Most Read This Week</h3>
+            </div>
+            <div className="sidebar-list">
+              {sidebarStories.map((story, index) => (
+                <a className="sidebar-article" key={story.slug} href={storyHref(contentLang, story)}>
+                  <div className="sidebar-article-img">
+                    <PlaceholderGraphic
+                      background={index % 3 === 0 ? "#2d5a3d" : index % 3 === 1 ? "#1a3520" : "#4a7c5f"}
+                      title={index === 0 ? "Rx" : index === 1 ? "?" : '"'}
+                    />
+                  </div>
+                  <div>
+                    <h4>{displayTitle(story)}</h4>
+                    <p>{story.section.replace(/-/g, " ")} · archive feature</p>
+                  </div>
+                </a>
               ))}
             </div>
           </div>
+        </div>
+
+        <section className="section-module" id="clinical-cases">
+          <div className="section-header">
+            <h2>Clinical Cases</h2>
+            <a className="see-all" href={`/${contentLang}/articles`}>All Cases ?</a>
+          </div>
+          <div className="grid-feature">
+            <a className="feature-card" href={storyHref(contentLang, clinicalCases[0])}>
+              <div className="feature-card-img">
+                <PlaceholderGraphic background="#e0d8c4" title="?" subtitle="Clinical Showcase" />
+              </div>
+              <span className="kicker">Showcase · {displayTitle(clinicalCases[0]).split(":")[0]}</span>
+              <h3>{displayTitle(clinicalCases[0])}</h3>
+              <p>{displayExcerpt(clinicalCases[0])}</p>
+              <div className="article-meta">
+                <span>{cleanText(clinicalCases[0]?.author, "Editorial")}</span>
+                <span className="dot">·</span>
+                <span>{storyDate(clinicalCases[0])}</span>
+              </div>
+            </a>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              {clinicalCases.slice(1, 4).map((story) => (
+                <a className="stack-article" key={story.slug} href={storyHref(contentLang, story)}>
+                  <span className="kicker">{story.section.replace(/-/g, " ")}</span>
+                  <h4>{displayTitle(story)}</h4>
+                  <p>{displayExcerpt(story)}</p>
+                </a>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              {quizFeature ? (
+                <a className="article-card" href={storyHref(contentLang, quizFeature)}>
+                  <div className="article-card-img" style={{ height: 140 }}>
+                    <PlaceholderGraphic background="#2d5a3d" title="KNOW YOUR" subtitle="KEYNOTES" />
+                  </div>
+                  <span className="kicker" style={{ marginTop: 10, display: "block" }}>Know Your Keynotes</span>
+                  <h3 style={{ fontSize: 15, marginBottom: 6 }}>{displayTitle(quizFeature)}</h3>
+                  <p style={{ fontSize: 13 }}>{displayExcerpt(quizFeature)}</p>
+                </a>
+              ) : null}
+            </div>
+          </div>
         </section>
 
-        <section id="wellness" className="space-y-6">
-          <SectionHeading
-            id="wellness-heading"
-            title="Living Well"
-            intro="Wellness writing, lifestyle insights, and supportive reading from the ILH archive."
-          />
-          <div className="grid gap-6 lg:grid-cols-3">
-            {wellnessStories.map((story) => (
-              <Card key={story.slug} className="flex h-full flex-col border-rule bg-white shadow-card">
-                <Kicker>{SECTION_LABELS[story.section] || "Feature"}</Kicker>
-                <h3 className="mt-3 font-playfair text-2xl font-semibold leading-tight text-forest">
-                  {displayTitle(story)}
-                </h3>
-                <p className="mt-3 flex-1 font-helvetica text-sm leading-6 text-muted">
-                  {displayExcerpt(
-                    story,
-                    "Read a wellness feature from the ILH editorial archive."
-                  )}
-                </p>
-                <a
-                  href={storyHref(contentLang, story)}
-                  className="mt-4 inline-flex font-helvetica text-sm font-semibold uppercase tracking-[0.14em] text-gold transition hover:text-goldLight"
-                >
-                  Read the story
-                </a>
-              </Card>
+        <div className="quiz-module" id="quiz-module">
+          <div className="quiz-inner">
+            <div className="quiz-left">
+              <span className="section-label">Remedy Quiz · What&apos;s the Remedy?</span>
+              <h2 className="quiz-title">Test Your Materia Medica</h2>
+              <div className="quiz-question">
+                A 6-month-old baby girl. Fair, plump, and pleasant. Gets fever after a head bath. Worse from warmth, better in open air. Thirstless despite the fever. No two stools alike. What is the remedy?
+              </div>
+              <div className="quiz-options">
+                {['Arsenicum Album','Pulsatilla Pratensis','Belladonna','Chamomilla'].map((option, index) => (
+                  <div className="quiz-option" key={option}>
+                    <span className="quiz-letter">{String.fromCharCode(65 + index)}</span>
+                    {option}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="quiz-right">
+              <span className="quiz-stat">4,200+</span>
+              <span className="quiz-stat-label">Quiz Answers Submitted</span>
+              <p>
+                Our daily quiz sharpens the prescribing instinct. From classic keynotes to full case studies — tested by homeopaths worldwide.
+              </p>
+              <button className="quiz-submit">Submit Answer</button>
+            </div>
+          </div>
+        </div>
+
+        <section className="section-module" id="philosophy">
+          <div className="section-header">
+            <h2>Philosophy of Homeopathy</h2>
+            <a className="see-all" href={`/${contentLang}/articles`}>All Articles ?</a>
+          </div>
+          <div className="grid-3">
+            {philosophy.map((story, index) => (
+              <a className="article-card" key={story.slug} href={storyHref(contentLang, story)}>
+                <div className="article-card-img">
+                  <PlaceholderGraphic
+                    background={index === 0 ? "#1a3520" : index === 1 ? "#2d5a3d" : "#0a1f2e"}
+                    title={index === 0 ? "§63" : index === 1 ? "?" : "Research"}
+                    subtitle={index === 0 ? "ORGANON OF MEDICINE" : index === 2 ? "Evidence & Epistemology" : undefined}
+                  />
+                </div>
+                <span className="kicker">{story.section === "philosophy" ? (index === 0 ? "Organon" : "Ponderings") : "Research"}</span>
+                <h3>{displayTitle(story)}</h3>
+                <p>{displayExcerpt(story)}</p>
+              </a>
             ))}
           </div>
         </section>
+
+        <div className="philosophy-band">
+          <div className="pull-quote-wrap">
+            <p className="pull-quote">
+              Homeopathy is revolutionary because it changes the very nature and purpose of medicine itself. The goal is not just to relieve pain — it is to restore health, and balance, and the full expression of the vital force.
+            </p>
+            <span className="pull-attr">Dr. Larry Malerba, MD — Dynamic Medicine</span>
+          </div>
+        </div>
+
+        <section className="section-module" id="history">
+          <div className="section-header">
+            <h2>History of Homeopathy</h2>
+            <a className="see-all" href={`/${contentLang}/articles`}>Archives ?</a>
+          </div>
+          <div className="history-grid">
+            <div className="history-portrait">
+              <div className="history-portrait-img">
+                <PlaceholderGraphic background="#e0d8c4" title="1895" subtitle="Portrait" />
+              </div>
+              <p className="history-portrait-cap">Dr. Sidney Robinson (1895, Australia) — Owner of the Homeopathic Dispensary, Myer&apos;s Place, Melbourne</p>
+            </div>
+            <div className="history-content">
+              <span className="kicker">Ambassadors of Homeopathy</span>
+              <h3>{displayTitle(history[0], "The Forgotten Pioneers: Homeopathy's Great Hospitals and the Physicians Who Built Them")}</h3>
+              <p>{displayExcerpt(history[0], "Before antibiotics and before the pharmaceutical industry, homeopathic hospitals dotted the cities of the English-speaking world.")}</p>
+              <p>{displayExcerpt(history[1], "From the Hahnemann College of Pennsylvania to the Rochester School of Nursing, these institutions trained generations of physicians.")}</p>
+              <a className="see-all" style={{ color: "var(--gold)", fontSize: 12 }} href={storyHref(contentLang, history[0])}>Read the full feature ?</a>
+              <div className="history-profiles">
+                {history.slice(1, 4).map((story, index) => (
+                  <a className="profile-mini" key={story.slug} href={storyHref(contentLang, story)}>
+                    <div className="profile-mini-img">
+                      <PlaceholderGraphic background={index === 0 ? "#2d5a3d" : index === 1 ? "#1a3520" : "#4a7c5f"} title={index === 0 ? "P.S.O" : index === 1 ? "EF" : "SC"} />
+                    </div>
+                    <h5>{displayTitle(story)}</h5>
+                    <p>{storyDate(story)}</p>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section-module" id="remedy-resonance">
+          <div className="section-header">
+            <h2>Remedy Resonance</h2>
+            <a className="see-all" href={`/${contentLang}/articles`}>All Guides ?</a>
+          </div>
+          <div className="grid-4">
+            {resonance.map((story, index) => (
+              <a className="article-card" key={story.slug} href={storyHref(contentLang, story)}>
+                <div className="article-card-img" style={{ height: 150 }}>
+                  <PlaceholderGraphic background={index === 0 ? "#1a3520" : index === 1 ? "#2d5a3d" : index === 2 ? "#0a1f2e" : "#4a7c5f"} title={index === 0 ? "+" : index === 1 ? "?" : index === 2 ? "?" : "¦"} />
+                </div>
+                <span className="kicker">Conditions · Study</span>
+                <h3 style={{ fontSize: 16 }}>{displayTitle(story)}</h3>
+                <p style={{ fontSize: 13 }}>{displayExcerpt(story)}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <div className="wellness-strip" id="wellness">
+          <div className="wellness-icon-wrap">
+            <div className="wellness-icon">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+            </div>
+            <span className="wellness-icon-label">Wellness</span>
+          </div>
+          <div>
+            <div className="section-header" style={{ marginBottom: 16, borderBottom: "2px solid var(--sage)" }}>
+              <h2 style={{ color: "var(--mid-green)" }}>Living Well</h2>
+              <a className="see-all" href={`/${contentLang}/articles`}>All Wellness ?</a>
+            </div>
+            <div className="wellness-articles">
+              {wellness.map((story) => (
+                <a className="wellness-item" key={story.slug} href={storyHref(contentLang, story)}>
+                  <h5>{displayTitle(story)}</h5>
+                  <p>{displayExcerpt(story)}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="newsletter" id="newsletter">
+          <h3>The Daily Remedy</h3>
+          <p>One remedy, one case, one insight — delivered to your inbox every morning. Free forever.</p>
+          <div className="nl-form">
+            <input className="nl-input" type="email" placeholder="Your email address" />
+            <button className="nl-btn">Subscribe</button>
+          </div>
+          <p className="nl-fine">Join 28,000 practitioners and students worldwide. Unsubscribe anytime.</p>
+        </div>
       </div>
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+﻿import "@/styles/globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Libre_Franklin, Playfair_Display, Source_Serif_4 } from "next/font/google";
@@ -57,15 +57,16 @@ export const robots = {
 };
 
 const navItems = [
-  { label: "Home", href: "/en" },
-  { label: "Remedy of the Day", href: "/en#remedy-of-the-day" },
-  { label: "Remedy Quiz", href: "/en#remedy-quiz" },
-  { label: "Clinical Cases", href: "/en#clinical-cases" },
-  { label: "Philosophy", href: "/en#philosophy" },
-  { label: "History", href: "/en#history" },
-  { label: "Remedy Resonance", href: "/en#remedy-resonance" },
-  { label: "Wellness", href: "/en#wellness" },
-  { label: "Book Reviews", href: "/en/articles" },
+  { label: "Home", href: "/en", className: "nav-item nav-home active" },
+  { label: "Remedy of the Day", href: "/en#remedy-of-the-day", className: "nav-item" },
+  { label: "Remedy Quiz", href: "/en#quiz-module", className: "nav-item" },
+  { label: "Clinical Cases", href: "/en#clinical-cases", className: "nav-item" },
+  { label: "Philosophy", href: "/en#philosophy", className: "nav-item" },
+  { label: "History", href: "/en#history", className: "nav-item" },
+  { label: "Remedy Resonance", href: "/en#remedy-resonance", className: "nav-item" },
+  { label: "Wellness", href: "/en#wellness", className: "nav-item" },
+  { label: "Book Reviews", href: "/en/articles/book-reviews/dynamic-medicine-the-world-according-to-homeopathy", className: "nav-item" },
+  { label: "Find a Homeopath", href: "https://findahomeopath.com", className: "nav-item" },
 ];
 
 export default function RootLayout({
@@ -87,180 +88,146 @@ export default function RootLayout({
       <head>
         <StructuredData data={structuredData} />
       </head>
-      <body className="min-h-screen bg-cream font-georgia text-ink">
+      <body className="bg-cream text-ink">
         <GA4Provider>
           <PostHogProvider>
-            <div className="bg-forest py-[7px] font-helvetica text-[11px] tracking-[0.03em] text-white">
-              <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 md:flex-row md:items-center md:justify-between md:px-12">
-                <div className="text-white/60">
-                  Thursday, April 2, 2026 · The World&apos;s Journal of Classical Medicine
+            <div className="utility-bar">
+              <Container>
+                <div className="utility-bar-inner">
+                  <div className="utility-edition">
+                    Thursday, April 2, 2026 Â· The World&apos;s Journal of Classical Medicine
+                  </div>
+                  <div className="utility-links">
+                    <a href="#">Sign In</a>
+                    <a href="#newsletter">Subscribe</a>
+                    <a href="https://findahomeopath.com" target="_blank" rel="noreferrer">
+                      Find a Homeopath
+                    </a>
+                    <a href="/en/doctors-corner">For Practitioners</a>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-5">
-                  <a href="/en/about" className="transition hover:text-goldLight">
-                    About
-                  </a>
-                  <a href="/en/research" className="transition hover:text-goldLight">
-                    Research
-                  </a>
-                  <a href="/en/doctors-corner" className="transition hover:text-goldLight">
-                    Doctors&apos; Corner
-                  </a>
-                  <a
-                    href="https://findahomeopath.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="transition hover:text-goldLight"
-                  >
-                    Find a Homeopath
-                  </a>
-                </div>
-              </div>
+              </Container>
             </div>
 
-            <header className="border-b border-rule bg-cream">
-              <div className="mx-auto max-w-7xl px-6 pt-7 md:px-12">
-                <div className="grid gap-6 pb-5 md:grid-cols-[1fr_auto_1fr] md:items-center">
-                  <div className="font-helvetica text-[11px] leading-[1.7] text-muted md:max-w-[220px]">
-                    <strong className="block text-[12px] font-semibold text-ink">
-                      Independent Journal
-                    </strong>
-                    Est. 1999 · Classical Homeopathy
+            <header className="masthead">
+              <Container>
+                <div className="masthead-inner">
+                  <div className="masthead-left">
+                    <strong>Independent Journal</strong>
+                    Est. 1999 Â· Classical Homeopathy
                     <br />
-                    Open Access · Free Forever
+                    Open Access Â· Free Forever
                   </div>
-
-                  <div className="text-center">
-                    <a
-                      href="/en"
-                      className="font-playfair text-[40px] font-black leading-none tracking-[-0.04em] text-forest md:text-[52px]"
-                    >
-                      I <span className="italic text-gold">Love</span> Homeopathy
+                  <div className="masthead-center">
+                    <a href="/en" className="masthead-logo">
+                      I <em>Love</em> Homeopathy
                     </a>
-                    <span className="mt-2 block font-helvetica text-[10px] uppercase tracking-[0.4em] text-muted">
-                      Similia Similibus Curentur
-                    </span>
+                    <span className="masthead-tagline">Similia Similibus Curentur</span>
                   </div>
-
-                  <div className="flex flex-col items-start gap-2 md:items-end">
-                    <a
-                      href="#newsletter"
-                      className="bg-forest px-5 py-[9px] font-helvetica text-[11px] font-semibold uppercase tracking-[0.09em] text-white transition hover:bg-midGreen"
-                    >
+                  <div className="masthead-right">
+                    <a href="#newsletter" className="subscribe-btn">
                       Subscribe Free
                     </a>
-                    <a
-                      href="/en/tools/glossary"
-                      className="flex items-center gap-2 border border-parchment px-3 py-[6px] font-helvetica text-[11px] text-muted transition hover:text-forest"
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
+                    <a href="/en/tools/glossary" className="search-box">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="11" cy="11" r="8" />
                         <line x1="21" y1="21" x2="16.65" y2="16.65" />
                       </svg>
-                      Search remedies, symptoms…
+                      Search remedies, symptomsâ€¦
                     </a>
                   </div>
                 </div>
-              </div>
+              </Container>
 
-              <nav className="sticky top-0 z-40 bg-forest">
-                <div className="mx-auto max-w-7xl px-0 md:px-12">
-                  <div className="flex h-11 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:overflow-visible">
-                    {navItems.map((item, index) => (
+              <nav className="primary-nav">
+                <Container>
+                  <div className="nav-inner">
+                    {navItems.map((item) => (
                       <a
                         key={item.label}
                         href={item.href}
                         target={item.href.startsWith("http") ? "_blank" : undefined}
                         rel={item.href.startsWith("http") ? "noreferrer" : undefined}
-                        className={`flex shrink-0 items-center border-r border-white/10 px-[18px] font-helvetica text-[12px] font-semibold uppercase tracking-[0.07em] transition md:flex-1 md:justify-center md:px-3 md:text-[11px] ${
-                          index === 0
-                            ? "bg-gold font-bold text-forest"
-                            : "text-white/80 hover:bg-white/5 hover:text-goldLight"
-                        }`}
+                        className={item.className}
                       >
                         {item.label}
                       </a>
                     ))}
                   </div>
-                </div>
+                </Container>
               </nav>
             </header>
 
-            <main className="flex-1 bg-cream">
+            <main className="main-content">
               <Container>{children}</Container>
             </main>
 
-            <footer className="bg-ink text-white">
-              <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-3 md:px-16">
-                <div>
-                  <h3 className="font-playfair text-2xl">I Love Homeopathy</h3>
-                  <p className="mt-2 font-helvetica text-sm leading-relaxed text-white/75">
-                    An educational initiative dedicated to promoting understanding
-                    and trust in homeopathy.
-                  </p>
-                </div>
+            <footer className="site-footer">
+              <Container>
+                <div className="footer-top">
+                  <div className="footer-brand">
+                    <span className="footer-logo">
+                      I <em>Love</em> Homeopathy
+                    </span>
+                    <span className="footer-tagline">Similia Similibus Curentur</span>
+                    <p className="footer-about">
+                      A publication dedicated to the advancement of classical
+                      homeopathy through education, clinical excellence, and the
+                      preservation of our great materia medica. Independent. Open
+                      access. Free forever.
+                    </p>
+                  </div>
 
-                <div>
-                  <h4 className="font-helvetica text-lg font-semibold">Quick Links</h4>
-                  <ul className="mt-3 space-y-2 font-helvetica text-sm">
-                    <li>
-                      <a href="/en/articles/understanding-homeopathy" className="transition hover:text-goldLight">
-                        About Homeopathy
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/en/remedies" className="transition hover:text-goldLight">
-                        Remedies Library
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/en/bach-remedies" className="transition hover:text-goldLight">
-                        Bach Flower Remedies
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/en/research" className="transition hover:text-goldLight">
-                        Articles & Research
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/en/doctors-corner" className="transition hover:text-goldLight">
-                        Doctors&apos; Corner
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="font-helvetica text-lg font-semibold">Connect</h4>
-                  <p className="mt-3 font-helvetica text-sm">
-                    Email:{" "}
-                    <a href="mailto:hello@ilovehomeopathy.org" className="transition hover:text-goldLight">
-                      hello@ilovehomeopathy.org
-                    </a>
-                  </p>
-                  <div className="mt-4 flex space-x-4 text-xl text-white/85">
-                    <a href="#" className="transition hover:text-goldLight" aria-label="Facebook">
-                      f
-                    </a>
-                    <a href="#" className="transition hover:text-goldLight" aria-label="Instagram">
-                      i
-                    </a>
-                    <a href="#" className="transition hover:text-goldLight" aria-label="YouTube">
-                      y
-                    </a>
-                    <a href="#" className="transition hover:text-goldLight" aria-label="LinkedIn">
-                      in
-                    </a>
+                  <div className="footer-links">
+                    <div className="footer-col">
+                      <h5>Learn</h5>
+                      <ul>
+                        <li><a href="/en#remedy-of-the-day">Remedy of the Day</a></li>
+                        <li><a href="/en/remedies">Materia Medica</a></li>
+                        <li><a href="/en#quiz-module">Remedy Quiz</a></li>
+                        <li><a href="/en#clinical-cases">Clinical Cases</a></li>
+                      </ul>
+                    </div>
+                    <div className="footer-col">
+                      <h5>Explore</h5>
+                      <ul>
+                        <li><a href="/en#philosophy">Philosophy</a></li>
+                        <li><a href="/en/research">Research</a></li>
+                        <li><a href="/en#remedy-resonance">Remedy Resonance</a></li>
+                        <li><a href="/en#wellness">Wellness</a></li>
+                      </ul>
+                    </div>
+                    <div className="footer-col">
+                      <h5>History</h5>
+                      <ul>
+                        <li><a href="/en#history">Great Homeopaths</a></li>
+                        <li><a href="/en#history">Homeopathic Hospitals</a></li>
+                        <li><a href="/en/articles/book-reviews/dynamic-medicine-the-world-according-to-homeopathy">Book Reviews</a></li>
+                      </ul>
+                    </div>
+                    <div className="footer-col">
+                      <h5>Connect</h5>
+                      <ul>
+                        <li>
+                          <a href="https://findahomeopath.com" target="_blank" rel="noreferrer">
+                            Find a Homeopath
+                          </a>
+                        </li>
+                        <li><a href="#newsletter">Subscribe</a></li>
+                        <li><a href="/en/tools">Tools</a></li>
+                        <li><a href="/en/about">Contact Us</a></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
+
+                <div className="footer-bottom">
+                  <span>Â© 2026 I Love Homeopathy. All rights reserved.</span>
+                  <span>
+                    <a href="#">Privacy</a> Â· <a href="#">Terms</a> Â· <a href="#">Cookie Policy</a>
+                  </span>
+                </div>
+              </Container>
             </footer>
           </PostHogProvider>
         </GA4Provider>
@@ -272,3 +239,4 @@ export default function RootLayout({
     </html>
   );
 }
+
