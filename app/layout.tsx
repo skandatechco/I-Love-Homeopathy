@@ -87,6 +87,13 @@ export default function RootLayout({
     >
       <head>
         <StructuredData data={structuredData} />
+        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ? (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+            crossOrigin="anonymous"
+          />
+        ) : null}
       </head>
       <body className="bg-cream text-ink">
         <GA4Provider>

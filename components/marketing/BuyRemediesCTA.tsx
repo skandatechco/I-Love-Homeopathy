@@ -1,21 +1,18 @@
 "use client";
-import { track } from "@/lib/tracking";
 
-export default function ConsultBaholaCTA() {
-  const href = "https://findahomeopath.com";
+export default function BuyRemediesCTA() {
   return (
     <a
-      href={href}
+      href="https://bahola.co"
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => track("consult_cta_click")}
       className="block rounded-2xl border border-rule bg-white p-5 text-sm leading-relaxed shadow-sm transition hover:shadow-md"
     >
       <div className="font-helvetica text-sm font-semibold uppercase tracking-[0.12em] text-forest">
-        Consult a Homeopath
+        Buy Remedies
       </div>
       <div className="mt-2 font-georgia text-sm text-muted">
-        Find an experienced homeopath for personalized guidance and care.
+        Explore Bahola&apos;s remedy collection and homeopathic wellness products.
       </div>
     </a>
   );
