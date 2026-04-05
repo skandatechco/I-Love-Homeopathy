@@ -13,7 +13,10 @@ export default function LoginPage() {
           Editorial Admin
         </p>
       </div>
-      <SignIn />
+      <SignIn
+        fallbackRedirectUrl="/admin/editor"
+        forceRedirectUrl="/admin/editor"
+      />
     </div>
   );
 }
