@@ -1,5 +1,6 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import {
   getArticleBySlug,
   getArticleHref,
@@ -71,6 +72,29 @@ export default async function SectionArticlePage({
       tags: article.tags,
     });
 
+    let renderedBody: ReactNode;
+    let mdxRenderFailed = false;
+
+    try {
+      renderedBody = await MDXRemote({ source: article.body });
+    } catch (error) {
+      mdxRenderFailed = true;
+      console.error("[article-detail] mdx render error", {
+        slug,
+        section,
+        error,
+      });
+      renderedBody = (
+        <div className="rounded-2xl border border-gold/30 bg-gold/10 p-5 font-helvetica text-sm leading-6 text-charcoal">
+          <p className="font-semibold text-navy">Content temporarily unavailable</p>
+          <p className="mt-2">
+            This article contains migrated content that is still being cleaned up.
+            Please check back shortly.
+          </p>
+        </div>
+      );
+    }
+
     return (
       <>
         <StructuredData data={structuredData} />
@@ -85,6 +109,15 @@ export default async function SectionArticlePage({
             </p>
           )}
 
+          {mdxRenderFailed ? (
+            <div className="rounded-2xl border border-rule bg-creamWarm px-5 py-4 font-helvetica text-sm leading-6 text-charcoal">
+              <p>
+                We&apos;re showing the summary while the full article body is being
+                repaired.
+              </p>
+            </div>
+          ) : null}
+
           <div className="text-[11px] text-sage">
             {article.date ? <>Updated {article.updated || article.date}</> : null}
           </div>
@@ -98,7 +131,7 @@ export default async function SectionArticlePage({
           />
 
           <section className="prose prose-lg max-w-none">
-            <MDXRemote source={article.body} />
+            {renderedBody}
           </section>
 
           <ReviewerAttribution reviewer={article.reviewer} />
