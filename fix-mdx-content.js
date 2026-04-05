@@ -65,12 +65,29 @@ function stripInlineToPlainText(text) {
 function cleanBody(body) {
   let output = body;
 
+  // Remove script blocks entirely.
+  output = output.replace(/<script[\s\S]*?<\/script>/gim, "");
+
+  // Remove whole lines containing Amazon affiliate/tracking domains.
+  output = output
+    .split(/\r?\n/)
+    .filter(
+      (line) =>
+        !/amazon-adsystem\.com|ir-na\.amazon|ws-na\.amazon|ir-in\.amazon|ws-in\.amazon/i.test(
+          line
+        )
+    )
+    .join("\n");
+
   // Remove Amazon affiliate widget blocks / tracking pixels / iframes completely.
   output = output
     .replace(/^.*(?:ws-(?:na|in)\.amazon-adsystem\.com|ir-(?:na|in)\.amazon-adsystem\.com).*$\n?/gim, "")
     .replace(/<iframe[\s\S]*?(?:amazon-adsystem\.com|amazon\.com)[\s\S]*?<\/iframe>/gim, "")
     .replace(/<img[^>]*?(?:amazon-adsystem\.com|amazon\.com)[^>]*\/?>/gim, "")
     .replace(/<a[^>]*?(?:amazon\.com|amzn\.to)[^>]*>[\s\S]*?<\/a>/gim, "");
+
+  // Remove tags that contain another HTML tag in their attribute values.
+  output = output.replace(/<([a-z0-9-]+)\b[^>]*(?:<[^>]+>)[^>]*>/gim, "");
 
   // Convert malformed markdown links whose href accidentally contains nested HTML into plain text.
   output = output.replace(
@@ -83,6 +100,9 @@ function cleanBody(body) {
     /<a\s+href=["']https?:\/\/<a\s+href=["'][^"']+["'][\s\S]*?<\/a>/gim,
     ""
   );
+
+  // Convert bare <br> tags to self-closing tags for MDX.
+  output = output.replace(/<br(\s*)>/gim, "<br />");
 
   // Self-close any remaining raw img tags.
   output = output.replace(/<img\b((?:(?!\/?>).)*)>/gim, (match, attrs) => {
