@@ -23,8 +23,8 @@ export default defineConfig({
     process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ??
     process.env.VERCEL_GIT_COMMIT_REF ??
     "main",
-  clientId: process.env.NEXT_PUBLIC_TINA_CLIENT_ID || "",
-  token: process.env.TINA_TOKEN || "",
+  clientId: process.env.NEXT_PUBLIC_TINA_CLIENT_ID ?? null,
+  token: process.env.TINA_TOKEN ?? null,
 
   build: {
     outputFolder: "admin",
